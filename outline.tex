@@ -1,0 +1,123 @@
+%% LyX 2.0.6 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{enumitem}
+\usepackage{framed}
+\usepackage{cprotect}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{amstext}
+\usepackage{amstext}
+\usepackage{pdfpages}
+\usepackage{alltt}
+\usepackage{epstopdf}
+\usepackage{xspace,colortbl}
+\usepackage[USenglish]{babel}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{subfigure}
+\usepackage{graphicx}%%
+\usepackage{amssymb}
+\usepackage{fmtcount}
+\usepackage{amsfonts}
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage[mathscr]{eucal}
+%\usepackage{psfrag}
+\usepackage{colortbl}
+
+\usepackage{bm}
+\usepackage{times}
+\usepackage[nospace]{cite}
+\usepackage{csquotes}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.54cm,bmargin=2.54cm,lmargin=2.54cm,rmargin=2.54cm}
+\usepackage{babel}
+\begin{document}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+\newtheorem{problem}{Problem}
+\newtheorem{property}{Property}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+
+\newcommand{\cond}{\textrm{pred}\xspace}
+\newcommand{\dataset}{data set\xspace}
+\newcommand{\datasets}{data sets\xspace}
+\newcommand{\spview}{\textsf{SPView}\xspace}
+\newcommand{\fjview}{\textsf{FJView}\xspace}
+\newcommand{\aggview}{\textsf{AggView}\xspace}
+\newcommand{\hashfunc}[1]{\textsf{hash}(#1)\xspace}
+\newcommand{\hashop}{\textsf{hash}\xspace}
+\newcommand{\nsc}{\textsf{NormalizedSC}\xspace}
+\newcommand{\rsc}{\textsf{RawSC}\xspace}
+
+\newcommand{\avgfunc}{\ensuremath{\texttt{avg} }\xspace}
+\newcommand{\maxfunc}{\ensuremath{\texttt{max} }\xspace}
+\newcommand{\minfunc}{\ensuremath{\texttt{min} }\xspace}
+\newcommand{\histfunc}{\ensuremath{\texttt{histogram\_numeric} }\xspace}
+\newcommand{\countfunc}{\ensuremath{\texttt{count}}\xspace}
+\newcommand{\sumfunc}{\ensuremath{\texttt{sum} }\xspace}
+\newcommand{\varfunc}{\ensuremath{\texttt{var} }\xspace}
+\newcommand{\stdfunc}{\ensuremath{\texttt{std} }\xspace}
+\newcommand{\covfunc}{\ensuremath{\texttt{cov} }\xspace}
+\newcommand{\corrfunc}{\ensuremath{\texttt{corr} }\xspace}
+\newcommand{\medfunc}{\ensuremath{\texttt{median} }\xspace}
+\newcommand{\percfunc}{\ensuremath{\texttt{percentile} }\xspace}
+\newcommand{\havingfunc}{\ensuremath{\texttt{HAVING} }\xspace}
+\newcommand{\selectfunc}{\ensuremath{\texttt{select} }\xspace}
+\newcommand{\ratio}{\ensuremath{\rho }\xspace}
+
+
+\newcommand{\insertion}{\ensuremath{\texttt{INSERT} }\xspace}
+\newcommand{\update}{\ensuremath{\texttt{UPDATE} }\xspace}
+\newcommand{\delete}{\ensuremath{\texttt{DELETE} }\xspace}
+
+\author{ Sanjay Krishnan, Jiannan Wang, Ken Goldberg, Michael J. Franklin \\
+AMPLab, UC Berkeley\\
+\{jnwang, sanjaykrishnan, franklin, goldberg\}@berkeley.edu
+%\email{milo@cs.tau.ac.il,~~~~tim\_kraska@brown.edu}
+}
+
+\title{SampleClean: Fast and Reliable Analytics on Dirty Data}
+\maketitle
+\begin{abstract}
+A perennial challenge in data analytics is presence of dirty data
+in the form of missing, duplicate, incorrect or inconsistent values.
+Data analysts report that data cleaning remains one of the most time
+consuming steps in the analysis process, and data cleaning can require
+a significant amount of developer effort in writing software or rules
+to fix the corruption. Since \emph{a priori}, the magnitude of data
+error is unknown, any amount of error is potentially biasing, and
+this presents a dichotomy between facing the cost of data cleaning
+or coping with consequences of unknown inaccuracy. In this article,
+we present a line of work called SampleClean, which allows the analyst
+to clean a sample of data and estimate the results (with provable
+guarantees) of some types of analytics--building on results in Approximate
+Query Process (AQP). We describe three projects: SampleClean, Stale
+View Cleaning, and ActiveClean. SampleClean returns bounded estimates
+of SUM, COUNT, and AVG queries using a sample of cleaned data. Stale
+View Cleaning models staleness in Materialized Views as a type of
+data error and applies and extenion of SampleClean for scalable incremental
+maintenance. ActiveClean extends SampleClean to a class of analytics
+that we call convex data analysis (subsuming common aggregate queries
+and including Machine Learning). Finally, we describe a number of
+open problems and future directions for the project.
+\end{abstract}
+
+\input{intro.tex}
+\input{background.tex}
+
+\fontsize{8.4pt}{8.7pt} \selectfont
+\bibliographystyle{abbrv}
+\bibliography{ref} 
+
+\end{document}
+

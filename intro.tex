@@ -1,0 +1,75 @@
+\section{Introduction}
+Data are susceptible to various forms of corruption such as missing,
+incorrect, or inconsistent representations \cite{Gartner}.
+Real-world data is commonly integrated from multiple sources, and the integration process may lead to a variety of data errors~\cite{DBLP:journals/pvldb/DongS13}. 
+Data analysts report that data cleaning remains one of the most time
+consuming steps in the analysis process \cite{nytimes}.
+Identifying and fixing data error often requires manually inspecting data, which can quickly become costly and time-consuming. 
+While crowdsourcing is an increasingly viable option for some types of errors ~\cite{DBLP:conf/sigmod/JefferyFH08,DBLP:journals/pvldb/FanLMTY10,DBLP:journals/pvldb/YakoutENOI11, gokhale2014corleone, park2014crowdfill, sampleclean,chu2015katara}, it comes at the significant cost of additional latency and the overhead of managing human workers. 
+
+Ignoring the effects of dirty data is potentially dangerous.
+Since \emph{a priori}, the magnitude of data error is unknown, any amount of error can be biasing biasing, and this presents a dichotomy between facing the cost of data cleaning
+or coping with consequences of unknown inaccuracy.
+In this article, we describe a middle ground that we call SampleClean \cite{wang1999sample}; where an analyst can clean a sample of data, and use this sample to improve an erroneous query result.
+The intruiging part of SampleClean is that while the query result is approximate, this approximation error is boundable--unlike the unknown data error.
+The tightness of this bound is parametrized by a flexible cleaning cost.
+
+The case for SampleClean is analagous to the case for Approximate Query Processing \cite{DBLP:conf/icde/OlkenR92, olken1993random, garofalakis2001approximate, AgarwalMPMMS13} (AQP).
+For decision problems, exploratory analysis problems, and visualization, it often suffices to return the an approximate query result bounded in confidence intervals; thus saving significant processing costs.
+Sampling error in many common aggregates tends to vary as $O(\frac{1}{\sqrt{n}})$, and therefore every additional $\epsilon$ factor of accuracy costs quadratically more.
+AQP avoids the expensive ``last mile" of processing, and timely answers facilitate improved user experiences and faster analysis.
+
+In traditional AQP, approximation necessarily sacrifices accuracy for reduced latency. 
+However, the goal of SampleClean differs from AQP, as SampleClean tradesoff data transformation cost for gradual improvements in query accuracy.
+While SampleClean introduces approximation error, the data cleaning mitigates errors in query results.
+There is a break-even point where a sufficient amount of data is cleaned to facilitate an accuracte approximation of queries on the cleaned data, and in this sense, sampling actually improves the accuracy of the query result.
+
+Formally, SampleClean \cite{wang1999sample} and all of its extensions \cite{krishnan2015svc}, work in the \emph{budgeted data cleaning} setting. 
+An analyst is allowed to apply an expensive data transformation $C(\cdot)$ to only $k\ll N$ rows in a relation.
+One solution could be to draw $k$ records uniformly at random and apply data cleaning, e.g., a direct extension of AQP.
+However, data cleaning presents a number of methodological problems that make this hard.
+First, $C(\cdot)$ may change the sampling statistics, for example, duplicated records are more likely to be sampled.
+Next, query processing on partially clean data, i.e., a mix of dirty and clean data, can lead to unreliable results due to the well known Simpsons Paradox.
+Finally, high-dimensional analytics such as Machine Learning may be very sensitive to sample size, perhaps even more so than the dirty data, and techniques for avoiding sample size dependence are required.
+
+One of the key insights of this research is that there are two constrasting query processing techniques to address every budgeted data cleaning problem.
+First, a direct extension of AQP which estimates the true query result based on the cleaned sample (possibly with some reweighting to account for changes in sampling statistics). 
+Next, using a sample of cleaned data to correct the error in a query result over the dirty data.
+We will show that there is an interesting theoretical tradeoff between these approaches, where the first approach is \emph{robust} as its accuracy is independent of the magnitude of data error, and the second approach is \emph{sample-efficient} as its accuracy is less dependent on sample size.
+
+In this article, we highlight four projects based on the SampleClean idea:
+
+\vspace{0.5em}
+\noindent \textbf{SampleClean \cite{wang1999sample}: } SampleClean describes query processing approaches for estimating aggregate queries using samples of clean data. SampleClean reweights the data to compensate for changes in sampling statistics such that the estimates are unbiased and bounded in confidence intervals.
+
+\vspace{0.5em}
+\noindent \textbf{View Cleaning \cite{krishnan2015svc}: } View Cleaning generalizes the notion of data cleaning to incluce processing out-of-date data. Staleness in materialized views (MVs) manifests itself as data error, i.e., a stale view has missing, superfluous, and incorrect rows.
+Like data cleaning, eager MV maintenance is expensive, and View Cleaning models querying an MV as a budgeted data cleaning problem.
+Aggregate queries are approximated from a stale MV using a small sample of up-to-date data, resulting in bounded estimates.
+
+\vspace{0.5em}
+\noindent \textbf{ActiveClean: } ActiveClean extends SampleClean to a class of analytics problems called Convex Data Analytics (subsuming the aggregates studied in SampleClean and including Machine Learning such as Support Vector Machines and Linear Regression). ActiveClean exploits the convex structure of the problem (i.e. gradients and feature space) to prioritize cleaning data that is likely to affect the model. ActiveClean directly integrates cleaning into the model training loop and as a result gives a bounded approximation for any cleaning budget.
+
+\vspace{0.5em}
+\noindent \textbf{Wisteria \cite{haas2015wisteria}: } In Wisteria, we implemented the ideas described in the SampleClean work in a real, distributed data cleaning system. This involved designing an algebra for data cleaning transformations and optimizations for their execution.
+
+\iffalse
+\vspace{1em}
+
+We further describe a number of open theoretical and practical problems to challenge the community, and we present some preliminary analysis of the following problems:
+
+\vspace{0.5em}
+\noindent \textbf{Completeness: } For aggregate queries in the budgeted data cleaning setting,
+variance of the clean data $\sigma_c^2$, variance of the pairwise differences between clean and dirty data $\sigma_d^2$, and sample size $k$, is $O(\frac{\min \{\sigma_c,\sigma_d\}}{\sqrt{k}})$ (derived in this work) an optimal error bound?
+
+\vspace{0.5em}
+\noindent \textbf{Point-Lookup Dichotomy: } This work focuses on aggregate analytics such as queries and statistical models. In fact, as the selectivity of the analytics goes to 0 (i.e., single row lookup), the bounds in this work limit to infinity. However, in practice, cleaning a sample of data can be used to address such queries, where a statistical model can be trained on a sample of data to learn a mapping between dirty and clean data. An open problem is exploring how much looser is a generalization bound (e.g., via Learning Theory) compared to the bounds on aggregate queries.
+
+\vspace{0.5em}
+\noindent \textbf{Confirmation Bias and Sample Re-use: } In practice, users repeatedly query and clean the sample of data. As a result, estimates are highly correlated and potentially overfit to a sample. An open problem is designing efficient sampling techniques to mitigate the effects of \emph{confirmation bias} and discourage a user from overfitting analysis to the sample.
+
+\vspace{0.5em}
+\noindent \textbf{Sample-based Optimization of Workflows: } In practical data cleaning workflows, there are numerous design choices e.g., whether or not to use crowdsourcing, similarity functions, etc. An open problem is using samples of cleaned data to estimate and tune parameters on data cleaning workflows.
+\fi
+
+

@@ -1,0 +1,70 @@
+\section{Background and Main Ideas}
+
+\subsection{Data Cleaning is Often Expensive}
+A number of surveys of analysts report that data cleaning is one of the most time consuming steps \cite{kandel2012enterprise, nytimes}.
+A number of data cleaning frameworks have been recently proposed to address the problem of corrupted data at scale\cite{khayyat2015bigdansing, chu2015katara, sampleclean}.
+As errors can be domain- or dataset-specific, data cleaning is an inherently human-driven process and can require a significant amount of developer effort in writing software or rules to fix the corruption.
+Automated fixes may not be reliable and can require human confirmation \cite{DBLP:journals/pvldb/YakoutENOI11}.
+One way to scale up human computation is crowdsourcing which has shown recent success in entity resolution and value filling \cite{gokhale2014corleone, park2014crowdfill, sampleclean,chu2015katara}.
+However, crowdsourcing comes with the costs of significant additional latency (orders of magnitude slower than data processing) and the overhead of managing human workers.
+
+Even for more sophisticated analytics, such as machine learning model training, cleaning is still orders of magnitude slower.
+We can compare recent results in data cleaning to a model training framework like CoCoA implemented on Spark \cite{jaggi2014communication}.
+Per record, BigDansing, a highly optimized automated Spark-based data cleaning system is 15.5x slower than CoCoA\footnote{For CoCoA to reach a precision of 1e-3}.
+Crowd based techniques like CrowdFill \cite{park2014crowdfill} and CrowdER \cite{wang2012crowder} are over 100,000x slower per record. 
+
+\subsection{Exploiting Application Structure}
+SampleClean applies sample to clean $k\ll N$ rows in a database to address the time-scale mismatch between the analytics application (e.g., SQL query, Machine Learning, Materialized View) and data cleaning.
+An important aspect of this project is how the structure and semantics of that application can be used to prioritize and budget data cleaning.
+In other words, a database only needs to be sufficiently clean for the requirements of the subsequent analytics.
+One such application is aggregate analytics as the endpoint of many big data analytics pipelines is an aggregation.
+Even the increasingly common statistical models like Support Vector Machines and Regressions can be thought of as high-dimensional aggregates.
+As widely established in AQP, aggregate analytics are widely applied in domains that are tolerant of approximation e.g., visualization or hypothesis testing.
+
+In the initial SampleClean work, we restricted the allowed aggregate queries to \sumfunc, \countfunc, and \avgfunc with predicates and group by clauses.
+In the two subsequent projects, View Cleaning and ActiveClean, we expanded the scope and the semantics of the application. 
+The View Cleaning problem explores data cleaning and general aggregates on derived relations with known view definitions.
+We can exploit view definition to query just as much of the base data as needed to accurately answer the aggregate query for a fixed budget.
+In fact, we showed that any aggregate (beyond \sumfunc, \countfunc, and \avgfunc) that could be estimated with SAQP\cite{agarwalknowing}, could be answered estimated with the View Cleaning framework.
+ActiveClean generalizes the initial work on \sumfunc, \countfunc, and \avgfunc to higher-dimensional aggregates.
+We defined a class of analytics called Convex Data Analytics, and show how the convex structure of the analytics can be used to guide and prioritize data cleaning.
+
+\subsection{Approximate Query Processing on Dirty Data}
+To understand how we can integrate data cleaning and sampling, let us first understand how traditional AQP is affected by dirty data.
+Sampling-based approximate query processing (SAQP) is a powerful technique that allows for fast approximate results on large datasets. 
+It has been well studied in the database community since the 1990s~\cite{DBLP:conf/sigmod/HellersteinHW97,DBLP:conf/sigmod/AcharyaGPR99}, and methods such as BlinkDB~\cite{DBLP:conf/eurosys/AgarwalMPMMS13} have drawn renewed attention in recent big data research. 
+An important aspect of SAQP is confidence intervals, as many types of aggregates can be bounded with techniques such as concentration inequalities (e.g., Hoeffding bounds), large-deviation inequalities (e.g., Central Limit Theorem), or empirically (e.g., bootstrap).
+However, these bounds assume that the only source of error is uncertainty introduced by sampling, however, the data itself may contain errors which could also affect query results. 
+
+Suppose, there is a relation $R$ and a uniform sample $S$.
+SAQP applies a query $q$ to $S$ (possibly with some scaling $c$) to return an estimate:
+\[
+q(R) \approx e = c \cdot q(S)
+\]
+If $R$ is dirty, then there is a true relation $R_{clean}$.
+\[
+q(R_{clean}) \ne q(R) \approx e = c \cdot q(S)
+\]
+The error in $e$ has two components error due to sampling $\epsilon_s$ and error due to the difference with the cleaned relation $\epsilon_c = q(R_{clean}) - q(R)$:
+\[
+\mid q(R_{clean}) - e \mid \le \epsilon_s + \epsilon_c
+\]
+
+While they are both forms of query result error $\epsilon_s$ and $\epsilon_c$ are very different quantities.
+$\epsilon_s$ is a random variable due to the sampling, and different samples would result in different realizations of $\epsilon_s$.
+As a random variable introduced by sampling, $\epsilon_s$ can be bounded by a variety of techniques as a function of the sample size.
+On the other hand, $\epsilon_c$ is deterministic, and by definition is a unknown quantity until all the data is cleaned.
+Thus, the bounds returned by a typical AQP framework on dirty data would neglect $\epsilon_c$.
+
+It is possible that $R_{clean} \ne R$ but $\epsilon_c=0$.
+Consider a \sumfunc query on the relation $R(a)$, where $a$ is a numerical attribute.
+If half of the rows in $R$ is corrupted with $+1$ and the other half are corrupted with $-1$, then $q(R_{clean}) = q(R)$.
+In the data cleaning setting, we are interested in systematic errors where $\epsilon_c > 0$ \cite{taylor1982introduction}. 
+In other words, the corruption that is correlated with the data, e.g., where every record is corrupted with a $+1$.
+
+\subsection{Direct Estimate vs. Correction}
+The key quanitity of interest in this work is $\epsilon_c$, and essentially, to be able to bound
+a query result on dirty data we need to either ensure $\epsilon_c$ is 0 or bound $\epsilon_c$.
+
+
+\subsection{Sampling to Improve Accuracy}
