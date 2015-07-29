@@ -59,12 +59,51 @@ Thus, the bounds returned by a typical AQP framework on dirty data would neglect
 It is possible that $R_{clean} \ne R$ but $\epsilon_c=0$.
 Consider a \sumfunc query on the relation $R(a)$, where $a$ is a numerical attribute.
 If half of the rows in $R$ is corrupted with $+1$ and the other half are corrupted with $-1$, then $q(R_{clean}) = q(R)$.
-In the data cleaning setting, we are interested in systematic errors where $\epsilon_c > 0$ \cite{taylor1982introduction}. 
+In the data cleaning setting, we are interested in \emph{systematic errors} where $\epsilon_c > 0$ \cite{taylor1982introduction}. 
 In other words, the corruption that is correlated with the data, e.g., where every record is corrupted with a $+1$.
 
 \subsection{Direct Estimate vs. Correction}
 The key quanitity of interest in this work is $\epsilon_c$, and essentially, to be able to bound
 a query result on dirty data we need to either ensure $\epsilon_c$ is 0 or bound $\epsilon_c$.
+We need to be able to ensure this for all budgets $k$.
+In particular, there are two ways in which this can be done: direct estimates and corrections.
 
+\vspace{0.5em}
+\noindent\textbf{Direct Estimate (Figure \ref{fig:est}a): } This is technique is a direct extension of SAQP to handle data cleaning. Suppose, we want to estimate the query $Q$ on a dirty relation $R$. A set of $k$ rows is sampled uniformly at random from the dirty relation $R$ resulting in a sample $S$. Data cleaning is applied to the sample $S$ resulting in $S_{clean}$.
+Data cleaning and sampling may change the statistical and scaling properties of the query $Q$, so $Q$ may have to be re-written to a query $\widehat{Q}$. $\widehat{Q}$ is applied to the sample $S_{clean}$ and the result is returned. 
+There are a couple of important points to note about this techniques.
+First, as in SAQP, the direct estimate only processes a sample of data.
+Next, since it processes a cleaned sample of data, at no point is there a dependence on the dirty data.
+As we will show later in the paper, the direct estimate returns a result whose accuracy is independent of the magnitude or rate of data error. 
+From a theoretical perspective, for some types of data cleaning, this technique ensures that $\epsilon_c = 0$ within the sample.
+
+\vspace{0.5em}
+\noindent\textbf{Correction (Figure \ref{fig:est}b): } The direct estimate suffers a subtle drawback. Suppose, there are relatively few errors in the data. The errors introduced by sampling may dominate any error reductions due to data cleaning. Instead of the direct estimate which ensures $\epsilon_c = 0$, we can try to estimate $\epsilon_c$. A set of $k$ rows is sampled uniformly at random from the dirty relation $R$ resulting in a sample $S$. Data cleaning is applied to the sample $S$ resulting in $S_{clean}$. 
+If we look at the difference in applying $\widehat{Q}$ to S and to $S_{clean}$, we can estimate the error $\epsilon_c$. 
+This allows us to issue a correction to the query result on the full data.
+In contrast to the direct estimate, this technique requires processing the entire dirty data (but only cleaning a sample).
+However, as we will later show, if errors are rare this technique gives significantly improved accuracy over the direct estimates.
+
+\begin{figure}\centering
+\includegraphics[width=.35\columnwidth]{figs/est1b.png}
+\hspace{2em}
+\includegraphics[width=.35\columnwidth]{figs/est1c.png}
+\caption{Estimating query results with data cleaning on random samples. \label{fig:est}}
+\end{figure}
 
 \subsection{Sampling to Improve Accuracy}
+The main argument for SampleClean is that when data errors significantly affect query results, a small sample of clean data can improve accuracy.
+This is a counter-intuitive point since traditionally AQP sacrifices accuracy due to sampling; however, when sampling is combined with data cleaning it is possible that a query on a cleaned sample is more accurate than a query on the entire dirty data.
+To better understand this tradeoff, we illustate one of the experiments from SampleClean \cite{wang1999sample}.
+In Figure \ref{fig:est2}, we plot error as a function of the cleaned sample size on a corrupted TPCH dataset.
+When errors are relatively rare (5\% corruption rate), the correction is more accurate. 
+When errors are more significant (50\% corruption rate), the direct estimate is more accurate.
+Note that the direct estimate returns results of the same accuracy regardless of the corruption rate. 
+
+\begin{SCfigure}
+\includegraphics[width=.6\columnwidth]{figs/allerror-samplesize.eps}
+\caption{Comparison of the convergence of the methods on two TPC-H datasets of 6M tuples with simulated errors 50\% error and 5\% error. On the dataset with larger errors, we find that the direct estimate gives a narrower confidence interval, and on the other the correction is more accurate.  \label{fig:est2}}
+\end{SCfigure}
+
+
+
