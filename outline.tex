@@ -75,11 +75,30 @@
 \newcommand{\havingfunc}{\ensuremath{\texttt{HAVING} }\xspace}
 \newcommand{\selectfunc}{\ensuremath{\texttt{select} }\xspace}
 \newcommand{\ratio}{\ensuremath{\rho }\xspace}
-
+\newcommand{\mean}{\ensuremath{\texttt{mean} }\xspace}
+\newcommand{\pred}{\ensuremath{\texttt{pred} }\xspace}
 
 \newcommand{\insertion}{\ensuremath{\texttt{INSERT} }\xspace}
 \newcommand{\update}{\ensuremath{\texttt{UPDATE} }\xspace}
 \newcommand{\delete}{\ensuremath{\texttt{DELETE} }\xspace}
+\newcommand{\svc}{View Cleaning\xspace}
+
+\newcommand{\saqpfunc}{\ensuremath{\phi }\xspace}
+\newcommand{\saqpplusfunc}{\ensuremath{\phi_{\clean} }\xspace}
+\newcommand{\clean}{\ensuremath{\texttt{clean} }\xspace}
+
+\newcommand{\Correct}[1]{\texttt{Correct}\ensuremath(#1)\xspace}
+\newcommand{\Remove}[2]{\texttt{Remove}\ensuremath(#1, #2)\xspace}
+\newcommand{\Predicate}[1]{\texttt{Predicate}($#1$)\xspace}
+\newcommand{\Predicaten}[1]{\texttt{Predicate}(#1)\xspace}
+\newcommand{\Predicatec}[1]{\texttt{Predicate}(\texttt{Correct}($#1$))\xspace}
+\newcommand{\Dedup}[2]{\texttt{Numdup}\ensuremath(#1)\xspace}
+
+\def\ojoin{\setbox0=\hbox{$\bowtie$}%
+  \rule[-.02ex]{.25em}{.4pt}\llap{\rule[\ht0]{.25em}{.4pt}}}
+\def\leftouterjoin{\mathbin{\ojoin\mkern-5.8mu\bowtie}}
+\def\rightouterjoin{\mathbin{\bowtie\mkern-5.8mu\ojoin}}
+\def\fullouterjoin{\mathbin{\ojoin\mkern-5.8mu\bowtie\mkern-5.8mu\ojoin}}
 
 \author{ Sanjay Krishnan, Jiannan Wang, Ken Goldberg, Michael J. Franklin \\
 AMPLab, UC Berkeley\\
@@ -116,6 +135,10 @@ open problems and future directions for the project.
 \input{intro.tex}
 \input{background.tex}
 \input{architecture.tex}
+\input{sampleclean.tex}
+\input{viewcleaning.tex}
+\input{activeclean.tex}
+
 
 \fontsize{8.4pt}{8.7pt} \selectfont
 \bibliographystyle{abbrv}
