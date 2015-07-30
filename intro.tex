@@ -52,24 +52,3 @@ Aggregate queries are approximated from a stale MV using a small sample of up-to
 
 \vspace{0.5em}
 \noindent \textbf{Wisteria \cite{haas2015wisteria}: } In Wisteria, we implemented the ideas described in the SampleClean work in a real, distributed data cleaning system. This involved designing an algebra for data cleaning transformations and optimizations for their execution.
-
-\iffalse
-\vspace{1em}
-
-We further describe a number of open theoretical and practical problems to challenge the community, and we present some preliminary analysis of the following problems:
-
-\vspace{0.5em}
-\noindent \textbf{Completeness: } For aggregate queries in the budgeted data cleaning setting,
-variance of the clean data $\sigma_c^2$, variance of the pairwise differences between clean and dirty data $\sigma_d^2$, and sample size $k$, is $O(\frac{\min \{\sigma_c,\sigma_d\}}{\sqrt{k}})$ (derived in this work) an optimal error bound?
-
-\vspace{0.5em}
-\noindent \textbf{Point-Lookup Dichotomy: } This work focuses on aggregate analytics such as queries and statistical models. In fact, as the selectivity of the analytics goes to 0 (i.e., single row lookup), the bounds in this work limit to infinity. However, in practice, cleaning a sample of data can be used to address such queries, where a statistical model can be trained on a sample of data to learn a mapping between dirty and clean data. An open problem is exploring how much looser is a generalization bound (e.g., via Learning Theory) compared to the bounds on aggregate queries.
-
-\vspace{0.5em}
-\noindent \textbf{Confirmation Bias and Sample Re-use: } In practice, users repeatedly query and clean the sample of data. As a result, estimates are highly correlated and potentially overfit to a sample. An open problem is designing efficient sampling techniques to mitigate the effects of \emph{confirmation bias} and discourage a user from overfitting analysis to the sample.
-
-\vspace{0.5em}
-\noindent \textbf{Sample-based Optimization of Workflows: } In practical data cleaning workflows, there are numerous design choices e.g., whether or not to use crowdsourcing, similarity functions, etc. An open problem is using samples of cleaned data to estimate and tune parameters on data cleaning workflows.
-\fi
-
-
