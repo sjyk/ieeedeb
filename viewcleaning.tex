@@ -1,45 +1,27 @@
 \section{View Cleaning \cite{krishnan2015svc}}
-In follow-up work to SampleClean, we explored how similar ideas could be applied to Materialized View maintenance.
+In follow-up work, we explored the generalization of SampleClean.
+Suppose the relation $R$ is in fact a derived relation of an underlying dirty database $D$.
+We explored how we can efficiently apply a data cleaning operation to a sample of $R$.
+This extension has an important application in approximate Materialized View maintenance, where we model a stale Materialized View as dirty data, and the maintenance procedure as cleaning.  
 
 \subsection{Motivation}
 There has been significant research on fast MV maintenance algorithms, most recently DBToaster \cite{DBLP:journals/vldb/KochAKNNLS14} which uses SQL query compilation and higher-order maintenance.
 However, even with these optimizations, some materialized views are computationally difficult to maintain and will have maintenance costs that can grow with the size of data (e.g, correlated aggregate in a sub-query).
-Increasingly large views require distribution and this further increases maintenance costs due to coordination.
-Furthermore, in real deployments, it is common to use the same infrastructure to maintain multiple materialized views (along with other analytics tasks) adding further contention to computational resources and reducing overall maintenance throughput. 
 When faced with such challenges, it is common to batch updates to amortize maintenance overheads and add flexibility to scheduling.
-In such settings, we see an opportunity for approximation through sampling which can give bounded query results in rapidly changing data for a reduced maintenance cost.
-Any amount of staleness can lead to erroneous query results where the user has no idea about the magnitude or the scope of query error. 
-
-This is similar to the data cleaning setting where traditionally, data cleaning has explored expensive, up-front cleaning of entire datasets for increased query accuracy.
-The problem of high computational costs for accurate results mirrors the challenge faced in the MV setting with the tradeoff between immediate maintenance (expensive and up-to-date) and deferred maintenance (inexpensive and stale). 
+Like dirty data, any amount of staleness can lead to erroneous query results where the user has no idea about the magnitude or the scope of query error. 
 Thus, we explore how samples of ``clean" (up-to-date) data can be used for improved query processing on MVs without incurring the full cost of maintenance.
 
 \subsection{Notation and Definitions}\label{notation}
 \svc returns a bounded approximation for aggregate queries on stale MVs for a flexible additional maintenance cost.
 
 \noindent \textbf{Materialized View:} Let $\mathcal{D}$ be a database which is a collection of relations $\{R_i\}$. 
-A \emph{materialized view} $S$ is the result of applying a \emph{view definition} to $\mathcal{D}$. 
+A \emph{materialized view} $V$ is the result of applying a \emph{view definition} to $\mathcal{D}$. 
 View definitions are composed of standard relational algebra expressions: Select ($\sigma_{\phi}$), Project ($\Pi$), Join ($\bowtie$), Aggregation ($\gamma$), Union ($\cup$), Intersection ($\cap$) and Difference ($-$). 
-We use the following parametrized notation for joins, aggregations and generalized projections:
-\begin{itemize}[noitemsep] \sloppy
-	\item $\Pi_{a_1,a_2,...,a_k}(R)$: Generalized projection selects attributes $\{a_1,a_2,...,a_k\}$ from $R$, allowing for adding new attributes that are arithmetic transformations of old ones (e.g., $a_1+a_2$).
-	\item $\bowtie_{\phi (r1,r2)}(R_1,R_2)$: Join selects all tuples in $R_1 \times R_2$ that satisfy $\phi (r_1,r_2)$. We use $\bowtie$ to denote all types of joins even extended outer joins such as $\rightouterjoin,\leftouterjoin,\fullouterjoin$.
-	\item $\gamma_{f,A}(R)$: Apply the aggregate function $f$ to the relation R grouped by the distinct values of $A$, where $A$ is a subset of the attributes.  
-	The DISTINCT operation can be considered as a special case of the Aggregation operation. 
-\end{itemize}
-\vspace{-0.5em}
-The composition of the unary and binary relational expressions can be represented as a tree, which is called the \emph{expression tree}.
-The leaves of the tree are the \emph{base relations} for the view. 
-Each non-leave node is the result of applying one of the above relational expressions to a relation.
-To avoid ambiguity, we refer to tuples of the base relations as \emph{records} and tuples of derived relations as \emph{rows}.
 
 \vspace{0.5em}
 
-\noindent \textbf{Primary Key:} We assume that each of the base relations has a \emph{primary key}. If this is not the case, we can always add an extra column 
-that assigns an increasing sequence of integers to each record.
-For the defined relational expressions, every row in a materialized view can also be given a primary key \cite{DBLP:journals/vldb/CuiW03, DBLP:conf/sigmod/ZengGMZ14},
-which we will describe in Section \ref{sampling}. 
-This primary key is formally a subset of attributes $u \subseteq \{a_1,a_2,...,a_k\}$ such that all $s \in S(u)$ are unique.
+\noindent \textbf{Primary Key:} We assume that each of the base relations has a \emph{primary key}. If this is not the case, we can always add an extra column that assigns an increasing sequence of integers to each record. 
+This primary key is formally a subset of attributes $u \subseteq \{a_1,a_2,...,a_k\}$ such that all $s \in V(u)$ are unique.
 
 \vspace{0.5em}
 
@@ -55,60 +37,58 @@ This means that at least one of the delta relations in $\partial \mathcal{D}$ is
 
 \vspace{0.5em}
 
-\noindent \textbf{Maintenance:} There may be multiple ways (e.g., incremental maintenance or recomputation) to maintain a view $S$, and we denote the up-to-date view as $S'$.
+\noindent \textbf{Maintenance:} There may be multiple ways (e.g., incremental maintenance or recomputation) to maintain a view $V$, and we denote the up-to-date view as $V'$.
 We formalize the procedure to maintain the view as a \emph{maintenance strategy} $\mathcal{M}$.
-A maintenance strategy is a relational expression the execution of which will return $S'$.
-It is a function of the database $\mathcal{D}$, the stale view $S$, and all the insertion and deletion relations $\partial \mathcal{D}$. 
+A maintenance strategy is a relational expression the execution of which will return $V'$.
+It is a function of the database $\mathcal{D}$, the stale view $V$, and all the insertion and deletion relations $\partial \mathcal{D}$. 
 In this work, we consider maintenance strategies composed of the same relational expressions as materialized views described above.
 \[
-S' = \mathcal{M}(S,\mathcal{D}, \partial D)
+V' = \mathcal{M}(V,\mathcal{D}, \partial D)
 \]
 
 \vspace{0.5em}
 
 \noindent \textbf{Staleness as Data Error:} The consequences of staleness are incorrect, missing, and superfluous rows. 
-Formally, for a stale view $S$ with primary key $u$ and an up-to-date view $S'$:
+Formally, for a stale view $V$ with primary key $u$ and an up-to-date view $V'$:
 \begin{itemize}[noitemsep] \sloppy
-	\item \textbf{Incorrect: } Incorrect rows are the set of rows (identified by the primary key) that are updated in $S'$. For $s \in S$, let $s(u)$ be the value of the primary key. An incorrect row is one such that there exists a $s' \in S'$ with $s'(u) = s(u)$ and $s \ne s'$.
-	\item \textbf{Missing: } Missing rows are the set of rows (identified by the primary key) that exist in the up-to-date view but not in the stale view. For $s' \in S'$, let $s'(u)$ be the value of the primary key. A missing row is one such that there does not exist a $s \in S$ with $s(u) = s'(u)$.
-	\item \textbf{Superfluous: } Superfluous rows are the set of rows (identified by the primary key) that exist in the stale view but not in the up-to-date view. For $s \in S$, let $s(u)$ be the value of the primary key. A superfluous row is one such that there does not exist a $s' \in S'$ with $s(u) = s'(u)$.
+	\item \textbf{Incorrect: } Incorrect rows are the set of rows (identified by the primary key) that are updated in $V'$. For $v \in V$, let $v(u)$ be the value of the primary key. An incorrect row is one such that there exists a $v' \in V'$ with $v'(u) = V(u)$ and $v \ne v'$.
+	\item \textbf{Missing: } Missing rows are the set of rows (identified by the primary key) that exist in the up-to-date view but not in the stale view. For $v' \in V'$, let $v'(u)$ be the value of the primary key. A missing row is one such that there does not exist a $v \in V$ with $v(u) = v'(u)$.
+	\item \textbf{Superfluous: } Superfluous rows are the set of rows (identified by the primary key) that exist in the stale view but not in the up-to-date view. For $v \in V$, let $v(u)$ be the value of the primary key. A superfluous row is one such that there does not exist a $v' \in V'$ with $v(u) = v'(u)$.
 \end{itemize}
 
 \vspace{0.5em}
 
 \noindent \textbf{Uniform Random Sampling:}
-We define a sampling ratio $m\in [0,1]$ and for each row in a view $S$, we include it into a sample with probability $m$.
-We use the ``hat'' notation (e.g., $\widehat{S}$) to denote sampled relations.
-The relation $\widehat{S}$ is a \emph{uniform sample} of $S$ if
-\[\text{(1) } \forall s \in \widehat{S} : s \in S\text{;~~~~~ (2) }Pr(s_1 \in \widehat{S}) =  Pr(s_2 \in \widehat{S}) = m.\]
+We define a sampling ratio $m\in [0,1]$ and for each row in a view $V$, we include it into a sample with probability $m$.
+The relation $S$ is a \emph{uniform sample} of $V$ if
+\[\text{(1) } \forall s \in S : s \in V\text{;~~~~~ (2) }Pr(s_1 \in S) =  Pr(s_2 \in S) = m.\]
 
 \vspace{0.5em}
 
-We say a sample is \emph{clean} if and only if it is a uniform random sample of the up-to-date view $S'$. 
+We say a sample is \emph{clean} if and only if it is a uniform random sample of the up-to-date view $V'$. 
 
 \subsection{Problem Setup}
 Formally, the workflow of \svc is:\vspace{-0.5em}
 \begin{enumerate}[noitemsep]
-\item We are given a view $S$.
-\item $\mathcal{M}$ defines the maintenance strategy that updates $S$ at each maintenance period.
-\item The view $S$ is stale between periodic maintenance, and the up-to-date view should be $S'$.
+\item We are given a view $V$.
+\item $\mathcal{M}$ defines the maintenance strategy that updates $V$ at each maintenance period.
+\item The view $V$ is stale between periodic maintenance, and the up-to-date view should be $V'$.
 \item \emph{(Problem 1. Stale Sample View Cleaning)} We find an expression $\mathcal{C}$ derived from $\mathcal{M}$ 
-that cleans a uniform random sample of the stale view $\widehat{S}$ to produce a ``clean" sample of the up-to-date
-view $\widehat{S'}$.
-\item \emph{(Problem 2. Query Result Estimation)} Given an aggregate query $q$ and the state query result $q(S)$, we use $\widehat{S'}$ and $\widehat{S}$ to estimate the up-to-date result.
-\item We optionally maintain an index of outliers $o$ for improved estimation in skewed data.
+that cleans a uniform random sample of the stale view $V$ to produce a ``clean" sample of the up-to-date
+view $S_{clean}$.
+\item \emph{(Problem 2. Query Result Estimation)} Given an aggregate query $q$ and the state query result $q(S)$, we use $S_{clean}$ and $S$ to estimate the up-to-date result.
 \end{enumerate} 
 
 \noindent\textbf{Stale Sample View Cleaning: }
 The first problem addressed by \svc is how to clean a sample of the stale materialized view.
-\begin{problem}[Stale Sample View Cleaning]\sloppy
-We are given a stale view $S$, a sample of this stale view $\widehat{S}$ with ratio $m$, the maintenance strategy $\mathcal{M}$, the base relations $\mathcal{D}$, and
+\begin{problem}[Stale View Cleaning]\sloppy
+We are given a stale view $S$, a sample of this stale view $S$ with ratio $m$, the maintenance strategy $\mathcal{M}$, the base relations $\mathcal{D}$, and
 the insertion and deletion relations $\partial \mathcal{D}$.
 We want to find a relational expression $\mathcal{C}$ such that:
 \[
-\widehat{S}' = \mathcal{C}(\widehat{S},\mathcal{D},\partial \mathcal{D}),
+V' = \mathcal{C}(S,\mathcal{D},\partial \mathcal{D}),
 \]
-where $\widehat{S}'$ is a sample of the up-to-date view with ratio $m$. 
+where $V'$ is a sample of the up-to-date view with ratio $m$. 
 \end{problem}
 
 \noindent\textbf{Query Result Estimation: }
@@ -117,19 +97,17 @@ This problem can be addressed with the direct estimation and correction techniqu
 described previously.
 
 \subsection{Cleaning a Sample View}
-
-\noindent\textbf{Challenges: } To setup the problem, we first consider two naive solutions to this problem that will not work. 
-We could trivially apply $\mathcal{M}$ to the entire stale view $S$ and update it to $S'$, and then sample.
+To setup the problem, we first consider two naive solutions to this problem that will not work. 
+We could trivially apply $\mathcal{M}$ to the entire stale view $S$ and update it to $V'$, and then sample.
 While the result is correct according to our problem formulation, it does not save us on any computation for maintenance.
 We want to avoid materialization of up-to-date rows outside of the sample. 
 However, the naive alternative solution is also flawed. 
-For example, we could just apply $\mathcal{M}$ to the stale sample $\widehat{S}$ and a sample of the delta relations $\widehat{\partial \mathcal{D}}$. 
+For example, we could just apply $\mathcal{M}$ to the stale sample $S$ and a sample of the delta relations $\widehat{\partial \mathcal{D}}$. 
 The challenge is that $\mathcal{M}$ does not always commute with sampling.
 
 \vspace{0.5em} 
 
-\noindent\textbf{Provenance: } To achieve a sample of $S'$, we need to ensure that for each $s \in S'$ all contributing rows in subexpressions to $s$ are also sampled. 
-This is a problem of row provenance \cite{DBLP:journals/vldb/CuiW03}.
+\noindent\textbf{Provenance: } To address the commutativity problem, we need to ensure that for each $s \in V'$ all contributing rows in subexpressions to $s$ are also sampled. 
 Provenance, also termed lineage, has been an important tool in the analysis of materialized views \cite{DBLP:journals/vldb/CuiW03} and in approximate query processing \cite{DBLP:conf/sigmod/ZengGMZ14}. 
 We recursively define a set of primary keys for all relations in the expression tree to define tuple provenance:
 \begin{definition} [Primary Key Generation]\label{pk}
@@ -181,8 +159,8 @@ However, when there is a constraint that enforces these attributes are equal the
 
 \noindent \textbf{Efficient View Cleaning: }
 If we apply the hashing operator to $\mathcal{M}$, we can get an optimized cleaning expression $\mathcal{C}$ that avoids materializing unnecessary rows. 
-When applied to a stale sample of a view $\widehat{S}$, the database $\mathcal{D}$, and the delta relations $\partial \mathcal{D}$, it produces an up-to-date sample with sampling ratio $m$:
+When applied to a stale sample of a view $S$, the database $\mathcal{D}$, and the delta relations $\partial \mathcal{D}$, it produces an up-to-date sample with sampling ratio $m$:
 \[
-\widehat{S}' = \mathcal{C}(\widehat{S},\mathcal{D},\partial \mathcal{D})
+V' = \mathcal{C}(S,\mathcal{D},\partial \mathcal{D})
 \]
 Thus, it addresses Problem 1, and with the materialized sample of up-to-date rows, we can apply the direct estimates and corrections in the previous section to estimate the result bounded in confidence intervals.

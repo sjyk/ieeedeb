@@ -2,7 +2,7 @@
 The subsequent sections overview the SampleClean projects, and this section describes some of the general principles, challenges, and design goals. 
 
 \subsection{Architecture}
-Figure \ref{fig:arch} describes the basic architecture of SampleClean. 
+At a high-level all SampleClean projects strive to apply a user-specified data transformation to a maximum of $k$ out of $N$ rows in a relation, and estimate the result of some data analytics if the entire relation was cleaned. Figure \ref{fig:arch} describes the basic architecture of these problems. 
 
 \vspace{0.5em}
 \noindent\textbf{Initialization: } The system is initialized with a dirty relation $R$, a user specified data cleaning technique $C(\cdot)$, a budget $k$, and some analytic query to run $q$. SampleClean provides a framework to execute the cleaner no more than $k$ times and estimate the result of $q$.  

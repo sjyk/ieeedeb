@@ -1,98 +1,68 @@
 \section{SampleClean \cite{wang1999sample}}
-This section describes the basic SampleClean technique and results.
+This section introduces the basic SampleClean framework where the results of aggregate queries on dirty relations are estimated and bounded. The subsequent variants of the problem will build on the formalization and results of this section.
 
 \subsection{Problem Setup}
-The basic SampleClean problem explores estimating queries of the form:
+
+\noindent \textbf{Dirty Relation: } Let $R$ be a dirty relation, where it is corrupted with the following errors: (\emph{Attribute Errors}) a row $r\in R$ has an attribute error in an attribute $a$ if $r(a)$ is incorrect or has a missing value,  (\emph{Duplication Errors} ) a row $r \in R$ is said to be a duplicate if there exists another distinct $r' \in R$ such that they refer to the same entity.
+
+\vspace{.25em}
+
+\noindent For every dirty relation $R$, there is a cleaned version $R_{clean}$ where attribute errors are corrected (or filled) and duplicates are merged to a canonical version. 
+
+\vspace{.25em}
+
+\noindent\textbf{Data Cleaning Model: } 
+For each row $r \in R$ the user-specified data cleaning technique must provide returns the following quantities: (\Correct{r}[a]) the corrected value of the attribute, (\Dedup{r}{R}) the number of times the record is duplicated in the entire dataset.
+
+\vspace{.25em}
+
+\noindent\textbf{Queries: } SampleClean addresses aggregate queries of the form:
 \begin{alltt}
 SELECT \textsf{f}(a) FROM R WHERE predicate GROUP BY gb_attrs
 \end{alltt}
-where f is \avgfunc, \sumfunc, or \countfunc. $R$ is a dirty relation corrupted with the following types of errors:
+where f is \avgfunc, \sumfunc, or \countfunc. 
 
-\vspace{.5em}
+\vspace{.25em}
 
-{\noindent \bf Value Error:} When an error occurs in the aggregation attributes of the query, it will lead to an incorrect aggregate result.
-
-\vspace{.5em}
-
-{\noindent \bf Condition Error:} When an error occurs in the predicate or group-by attribute of the query, there may be some tuples that are \emph{falsely} added into or excluded from a group, leading to an incorrect result. 
-
-\vspace{.5em}
-
-{\noindent \bf Duplication Errors:} If data contains duplicate tuples (e.g., different representations of the same paper), the aggregate result will also be affected. This type of error commonly happens when the data is integrated from multiple sources. 
-
-\vspace{1em}
-
-\noindent For each row $r$ the user-specified data cleaning technique must provide:
-
-\vspace{.5em}
-
-{\noindent \bf \Correct{r}[a]: } The corrected value of the aggregation attribute.
-
-\vspace{.5em}
-
-{\noindent \bf \Predicatec{r}: } Whether or not the cleaned row satisfies the predicate.
-
-\vspace{.5em}
-
-{\noindent \bf \Dedup{r}{R}: } The number of times the record is duplicated in the entire dataset.
-
-\vspace{1em}
-
-\noindent Given this setup, SampleClean returns an unbiased estimate of the query result from applying the cleaning to only $k$ rows bounded in confidence intervals.
+\begin{problem}[Sample-and-Clean]
+Given a dirty relation $R$, and a user-specified data cleaning function $C(\cdot)$, the Sample-and-Clean problem is to estimate the result of an aggregate query $q$ applied to the hypothetical cleaned relation $q(R_{clean})$ with a budget of applying $C$ to at most $k$ rows of $R$. 
+\end{problem}
 
 \subsection{Sample Estimates}\label{subsec:resultestimation}
-We will first introduce the estimation setting without data errors and explain some results about estimates from sampled data.
-We start with the table of $N$ tuples which we call $R$, the \emph{population}.
-From $R$, we sample a subset $S$ of size $k$ uniformly; that is, every tuple is sampled with equal probability.
-
-
-Consider a simpler problem; suppose we want to estimate the \mean value of $R$.
-We can calculate the \mean of $S$ and the Central Limit Theorem (CLT) states that these estimates follow a normal distribution:
+Consider a simpler problem; suppose we want to estimate the \mean value of $R$ ignoring data error from a sample $S$.
+If $S$ is a sample uniformly at random from $R$ (with or without replacement), we can calculate the \mean of $S$ and for a large enough sample, the Central Limit Theorem (CLT) states that these estimates follow a normal distribution:
 \[\small
-N(\mean(P),\frac{var(R)}{r})
+N(\mean(R),\frac{var(R)}{k})
 \]
-Since the estimate is normally distributed, we can define a confidence interval parametrized by $\lambda$ (e.g., 95\% indicates $\lambda=1.96$)\footnote{\scriptsize When estimating means of finite population there is a finite population correction factor of $FPC=\frac{N-k}{N-1}$ which scales the confidence interval.}.
+Since the estimate is normally distributed, we can define a confidence interval parametrized by $\lambda$ (e.g., 95\% indicates $\lambda=1.96$)\footnote{\scriptsize When estimating means from samples without replacement there is a finite population correction factor of $FPC=\frac{N-k}{N-1}$ which scales the confidence interval.}.
 \begin{equation}\small
 \mean(S) \pm \lambda \sqrt{\frac{var(S)}{k}}.
 \end{equation}
 
-We can estimate \avgfunc, \countfunc, and \sumfunc queries by re-formulating them as \mean value calculations.
-We first define some notation:
-\begin{itemize}\vspace{-.5em}
-\item $f(\cdot)$: a function representing any of the supported aggregate queries with a predicate.
-\item \Predicate{t}: the predicate of the aggregate query, where \Predicate{t} = 1 or 0 denotes $r$ satisfies or dissatisfies the predicate, respectively.
-\item $k$: the number of tuples in the sample.
-\item $k_{\pred}$: the number of tuples that satisfy the predicate in the sample.
-\item $r[a]$: the aggregation-attribute value. If it is clear from the context that $r$ refers to an attribute value rather than a tuple, we will omit `$[a]$' for brevity.
-\end{itemize}
-
-We can reformulate all of the queries as calculating a \mean value so we can estimate their confidence intervals with the CLT:
-\begin{equation}\label{eq:general-func}\small
+We can reformulate all of the queries as calculating a \mean value so we can estimate their confidence intervals with the CLT 
+$
 f(S) = \frac{1}{k} \sum_{r \in S} \saqpfunc(r)
-\end{equation}
-where $\saqpfunc(\cdot)$ expresses all of the necessary scaling to translate the query into a \mean value calculation:
+$.
+where $\saqpfunc(\cdot)$\footnote{\Predicate{t} is the predicate of the aggregate query, where \Predicate{t} = 1 or 0 denotes $r$ satisfies or dissatisfies the predicate, respectively. $k_{\pred}$ is the number of tuples that satisfy the predicate in the sample.} expresses all of the necessary scaling to translate the query into a \mean value calculation:
 \begin{itemize}\vspace{-.5em}
 \item \countfunc: $\saqpfunc(t) = \Predicate{r} \cdot N$\vspace{-.5em}
-\item \sumfunc: ~\, $\saqpfunc(t) = \Predicate{r} \cdot N \cdot r[a]$\vspace{-.5em}
-\item \avgfunc: ~\, $\saqpfunc(t) = \Predicate{r} \cdot \frac{k}{k_{\pred}}  \cdot r[a] $ 
+\item \sumfunc: ~\, $\saqpfunc(t) = \Predicate{r} \cdot N \cdot r(a)$\vspace{-.5em}
+\item \avgfunc: ~\, $\saqpfunc(t) = \Predicate{r} \cdot \frac{k}{k_{\pred}}  \cdot r(a) $ 
 \end{itemize}
 
 \subsection{Direct Estimation with Data Errors}
-If we ignore data errors, the estimates described in the previous section are unbiased.
-Suppose $R_{\clean}$ is the corresponding clean population for the dirty data population $R$.
 We are interested in estimating an aggregate query on $R_{\clean}$.
 However, since we do not have the clean data, we cannot directly sample from $R_{\clean}$.
 We must draw our sample from the dirty data $R$ and then clean the sample.
 
-The key question is whether running an aggregate query on the cleaned sample is equivalent to computing the query result on a sample directly drawn from the clean data.
-When this is true, our estimate is unbiased, and we can derive confidence intervals using the CLT.
-In the following section, we explore this question on different types of data errors.
+Running an aggregate query on the cleaned sample is not equivalent to computing the query result on a sample directly drawn from the clean data.
+Consider the case where data is duplicated, sampling from the dirty data leads to an overrepresentation of the duplicated data in the sample.
+Even if cleaning is subsequently applied it does not change the fact that the sample is not uniform; and thus, the estimation method without errors presented before does not apply.
 Our goal is to define a new function $\saqpplusfunc(\cdot)$, an analog to $\saqpfunc(\cdot)$, that corrects attribute values and re-scales to ensures that the estimate remains unbiased.
 
-\subsubsection{Value and Condition Errors}
-Both value and condition errors are caused by incorrect attribute values of the dirty data.
-Correcting a value or condition error only affects an individual tuple.
-Consequently, if we apply the $\saqpfunc(\cdot)$ to the corrected tuple, we still preserve the uniform sampling properties of the sample, $S$.
+\subsubsection{Attribute Errors}
+This sampling statistics change only affected duplication errors, attributes errors only affects an individual row.
+Consequently, if we apply the $\saqpfunc(\cdot)$ to the corrected tuple, we still preserve the uniform sampling properties of the sample $S$.
 In other words, the probability that a given tuple is sampled is not changed by our correction of value and condition errors, thus we define $\saqpplusfunc(t)$ as:
 \[\small
 \saqpplusfunc(t) = \saqpfunc \left( \Correct{t} \right).
@@ -153,8 +123,7 @@ $ \\ [1ex] % [1ex] adds vertical space
 \end{table}
 
 \subsection{Correction with Data Errors}
-Due to data errors, the result of the aggregation function~$f$ on the dirty population $R$ differs from the true result by~$\epsilon$:
-\[f(R) = f(R_{\clean}) + \epsilon\]
+Due to data errors, the result of the aggregation function~$f$ on the dirty population $R$ differs from the true result $f(R) = f(R_{\clean}) + \epsilon$.
 We derived a function $\saqpplusfunc(\cdot)$ for the direct estimation.
 We contrasted this function with $\saqpfunc ( \cdot )$ which does not clean the data.
 Therefore, we can write:

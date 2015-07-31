@@ -22,9 +22,9 @@ AQP avoids the expensive ``last mile" of processing, and timely answers facilita
 In traditional AQP, approximation necessarily sacrifices accuracy for reduced latency. 
 However, the goal of SampleClean differs from AQP, as SampleClean tradesoff data transformation cost for gradual improvements in query accuracy.
 While SampleClean introduces approximation error, the data cleaning mitigates errors in query results.
-There is a break-even point where a sufficient amount of data is cleaned to facilitate an accuracte approximation of queries on the cleaned data, and in this sense, sampling actually improves the accuracy of the query result.
+There is a break-even point where a sufficient amount of data is cleaned to facilitate an accurate approximation of queries on the cleaned data, and in this sense, sampling actually improves the accuracy of the query result.
 
-Formally, SampleClean \cite{wang1999sample} and all of its extensions \cite{krishnan2015svc}, work in the \emph{budgeted data cleaning} setting. 
+SampleClean \cite{wang1999sample} and all of its extensions \cite{krishnan2015svc}, work in the \emph{budgeted data cleaning} setting. 
 An analyst is allowed to apply an expensive data transformation $C(\cdot)$ to only $k\ll N$ rows in a relation.
 One solution could be to draw $k$ records uniformly at random and apply data cleaning, e.g., a direct extension of AQP.
 However, data cleaning presents a number of methodological problems that make this hard.
