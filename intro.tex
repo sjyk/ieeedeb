@@ -16,8 +16,8 @@ The tightness of this bound is parametrized by a flexible cleaning cost.
 
 The case for SampleClean is analagous to the case for Approximate Query Processing \cite{DBLP:conf/icde/OlkenR92, olken1993random, garofalakis2001approximate, AgarwalMPMMS13} (AQP).
 For decision problems, exploratory analysis problems, and visualization, it often suffices to return the an approximate query result bounded in confidence intervals; thus saving significant processing costs.
-Sampling error in many common aggregates tends to vary as $O(\frac{1}{\sqrt{n}})$, and therefore every additional $\epsilon$ factor of accuracy costs quadratically more.
-AQP avoids the expensive ``last mile" of processing, and timely answers facilitate improved user experiences and faster analysis.
+In many common aggregates, the samples-to-accuracy trade off tends to vary as $O(\frac{1}{\sqrt{n}})$, and therefore every additional $\epsilon$ factor of accuracy costs quadratically more.
+In applications where approximation can be tolerated, sampling avoids the expensive ``last mile" of processing and timely answers facilitate improved user experiences and faster analysis.
 
 In traditional AQP, approximation necessarily sacrifices accuracy for reduced latency. 
 However, the goal of SampleClean differs from AQP, as SampleClean tradesoff data transformation cost for gradual improvements in query accuracy.
