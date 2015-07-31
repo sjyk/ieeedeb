@@ -8,18 +8,10 @@ Automated fixes may not be reliable and can require human confirmation \cite{DBL
 One way to scale up human computation is crowdsourcing which has shown recent success in entity resolution and value filling \cite{gokhale2014corleone, park2014crowdfill, sampleclean,chu2015katara}.
 However, crowdsourcing comes with the costs of significant additional latency (orders of magnitude slower than data processing) and the overhead of managing human workers.
 
-Even for more sophisticated analytics, such as machine learning model training, cleaning is still orders of magnitude slower.
-We can compare recent results in data cleaning to a model training framework like CoCoA implemented on Spark \cite{jaggi2014communication}.
-Per record, BigDansing, a highly optimized automated Spark-based data cleaning system is 15.5x slower than CoCoA\footnote{For CoCoA to reach a precision of 1e-3}.
-Crowd based techniques like CrowdFill \cite{park2014crowdfill} and CrowdER \cite{wang2012crowder} are over 100,000x slower per record. 
-
 \subsection{Exploiting Application Structure}
 SampleClean applies sample to clean $k\ll N$ rows in a database to address the time-scale mismatch between the analytics application (e.g., SQL query, Machine Learning, Materialized View) and data cleaning.
 An important aspect of this project is how the structure and semantics of that application can be used to prioritize and budget data cleaning.
-In other words, a database only needs to be sufficiently clean for the requirements of the subsequent analytics.
-One such application is aggregate analytics as the endpoint of many big data analytics pipelines is an aggregation.
-Even the increasingly common statistical models like Support Vector Machines and Regressions can be thought of as high-dimensional aggregates.
-As widely established in AQP, aggregate analytics are widely applied in domains that are tolerant of approximation e.g., visualization or hypothesis testing.
+A database only needs to be sufficiently clean for the requirements of the subsequent analytics--and the key insight from AQP being that aggregates are tolerant to approximation.
 
 In the initial SampleClean work, we restricted the allowed aggregate queries to \sumfunc, \countfunc, and \avgfunc with predicates and group by clauses.
 In the two subsequent projects, View Cleaning and ActiveClean, we expanded the scope and the semantics of the application. 
@@ -84,12 +76,12 @@ This allows us to issue a correction to the query result on the full data.
 In contrast to the direct estimate, this technique requires processing the entire dirty data (but only cleaning a sample).
 However, as we will later show, if errors are rare this technique gives significantly improved accuracy over the direct estimates.
 
-\begin{figure}\centering
-\includegraphics[width=.35\columnwidth]{figs/est1b.png}
+\begin{SCfigure}\centering
+\includegraphics[width=.3\columnwidth]{figs/est1b.png}
 \hspace{2em}
-\includegraphics[width=.35\columnwidth]{figs/est1c.png}
-\caption{Estimating query results with data cleaning on random samples. \label{fig:est}}
-\end{figure}
+\includegraphics[width=.3\columnwidth]{figs/est1c.png}
+\caption{Estimating query results with data cleaning on random samples. There are two ways to estimate a query result: (a) direct estimation applies the query to a sample (possibly with some scaling), and (b) correction corrects a query result on the entire dirty data.\label{fig:est}}
+\end{SCfigure}
 
 \subsection{Sampling to Improve Accuracy}
 The main argument for SampleClean is that when data errors significantly affect query results, a small sample of clean data can improve accuracy.

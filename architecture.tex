@@ -78,19 +78,15 @@ In Wisteria, sampling is a first-class logical operator for data cleaning plans 
 Analysts can prototype expensive data cleaning operations and estimate the effects using samples.
 The samples also serve to tune data cleaning plans and a recommendation engine proposes changes to in-flight cleaning plans that allow users to trade off accuracy and latency, and the system provides efficient mechanisms for implementing recommended changes without re-executing the plan on already cleaned tuples.
 
-\begin{figure}[t]
-\centering
-\vspace{-0.5cm}
+\begin{SCfigure}
 \includegraphics[width = .4\textwidth]{figs/lifecycle.png}
-\vspace{-0.4cm}
-\caption{Example iterations on the design of the portion of a cleaning plan that extracts restaurant addresses from their unstructured webpages.  
-1) An exploratory plan that uses a sample to evaluate a simple address extraction method.
+\caption{
+1) The analyst starts with an exploratory plan that uses a sample to evaluate a simple address extraction method.
 2) A plan that applies the method to the entire dataset. The quality is unsatisfactory. 
 3) An alternate plan that uses manual crowd extraction. The quality is now high, but the crowd-based extractor is slow. 
 4) A hybrid plan that sends only difficult webpages to the crowd, maximizing accuracy without sacrificing latency.}
 \label{fig:ex-plan}
-\vspace{-0.3cm}
-\end{figure}
+\end{SCfigure}
 
 
 
