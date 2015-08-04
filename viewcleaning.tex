@@ -164,3 +164,27 @@ When applied to a stale sample of a view $S$, the database $\mathcal{D}$, and th
 V' = \mathcal{C}(S,\mathcal{D},\partial \mathcal{D})
 \]
 Thus, it addresses Problem 1, and with the materialized sample of up-to-date rows, we can apply the direct estimates and corrections in the previous section to estimate the result bounded in confidence intervals.
+
+\subsection{Results: Video Streaming Log Analysis}
+We evaluate \svc on Apache Spark~1.1.0 with 1TB of logs from a video streaming company, Conviva \cite{conviva}.
+This is a denormalized user activity log corresponding to video views and various metrics such as data transfer rates, and latencies.
+Accompanying this data is a four month trace of queries in SQL.
+We identified 8 common summary statistics-type queries that calculated engagement and error-diagnosis metrics.
+These 8 queries defined the views in our experiments.
+We populated these view definitions using the first 800GB of user activity log records.  
+We then applied the remaining 200GB of user activity log records as the updates (i.e., in the order they arrived) in our experiments.
+We generated aggregate random queries over this view by taking either random time ranges or random subsets of customers.
+
+\begin{figure}[t]
+\centering
+ \includegraphics[scale=0.16]{figs/con_3.pdf}
+ \includegraphics[scale=0.16]{figs/con_4.pdf} \vspace{-1.5em}
+ \caption{(a) We compare the maintenance time of \svc with a 10\% sample and full incremental maintenance, and find that as with TPCD \svc saves significant maintenance time. (b) We also evaluate the accuracy of the estimation techniques. \label{conv-1}}\vspace{-1.5em}
+\end{figure}
+
+In Figure \ref{conv-1}(a), we show that on average over all the views, \svc-10\% gives a 7.5x speedup.
+For one of the views full incremental maintenance takes nearly 800 seconds, even on a 10-node cluster, which is a very significant cost.
+In Figure \ref{conv-1}(b), we show that \svc also gives highly accurate results with an average error of 0.98\%.
+These results show consistency with our results on the synthetic datasets.
+This experiment highlights a few salient benefits of \svc: (1) sampling is a relatively cheap operation and the relative speedups in a single node and distributed environment are similar, (2) for analytic workloads like Conviva (i.e., user engagement analysis) a 10\% sample gives results with 99\% accuracy, and (3) savings are still significant in systems like Spark that do not support selective updates.
+
