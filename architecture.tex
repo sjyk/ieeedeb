@@ -13,7 +13,7 @@ At a high-level all SampleClean projects strive to apply a user-specified data t
 q = SELECT \textsf{f}(attrs) FROM R WHERE predicate GROUP BY attrs
 \end{alltt}
 In SampleClean, we consider \avgfunc, \sumfunc, \countfunc, and \varfunc.
-In View Cleaning, we extend this set of queries to any queries that can be estimated with a statistical bootstrap \cite{agarwalknowing}.
+In View Cleaning, we extend this set of queries to any queries that can be estimated with a statistical bootstrap \cite{agarwalknowing}. \jn{Please doublecheck this sentence. Based on my understanding, the statistical bootstrap is for getting bounds, not for estimating query results. }
 Finally, in ActiveClean, we extend this work to consider Machine Learning models as aggregate queries.
 
 \vspace{0.5em}
@@ -24,7 +24,7 @@ And in ActiveClean, we use the analytic query $q$ to select a non-uniform sample
 \vspace{0.5em}
 \noindent\textbf{Cleaner: }
 Given the sample of dirty rows $S_{dirty}$,  the cleaner applies the user-specified data cleaning $C(\cdot)$. There are two data cleaning models for $C(\cdot)$: \emph{row-by-row} and \emph{set-of-rows}.
-Formally, a row-by-row cleaner is applied to every row in $S_dirty$ and possibly changes the sampling probability as well (e.g., deduplication):
+Formally, a row-by-row cleaner is applied to every row in $S_{dirty}$ and possibly changes the sampling probability as well (e.g., deduplication):
 \[
 (S_{clean},p_i') = \{C(r) : \forall (r,p_i) \in (S_{dirty},p_i)\}
 \]
@@ -84,7 +84,7 @@ The samples also serve to tune data cleaning plans and a recommendation engine p
 1) The analyst starts with an exploratory plan that uses a sample to evaluate a simple address extraction method.
 2) A plan that applies the method to the entire dataset. The quality is unsatisfactory. 
 3) An alternate plan that uses manual crowd extraction. The quality is now high, but the crowd-based extractor is slow. 
-4) A hybrid plan that sends only difficult webpages to the crowd, maximizing accuracy without sacrificing latency.}
+4) A hybrid plan that sends only difficult webpages to the crowd, maximizing accuracy without sacrificing latency. \reminder{I didn't found the reference to this figure in the text. }}
 \label{fig:ex-plan}
 \end{SCfigure}
 

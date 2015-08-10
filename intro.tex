@@ -8,15 +8,15 @@ Identifying and fixing data error often requires manually inspecting data, which
 While crowdsourcing is an increasingly viable option for some types of errors ~\cite{DBLP:conf/sigmod/JefferyFH08,DBLP:journals/pvldb/FanLMTY10,DBLP:journals/pvldb/YakoutENOI11, gokhale2014corleone, park2014crowdfill, sampleclean,chu2015katara}, it comes at the significant cost of additional latency and the overhead of managing human workers. 
 
 Ignoring the effects of dirty data is potentially dangerous.
-Since \emph{a priori}, the magnitude of data error is unknown, any amount of error can be biasing biasing, and this presents a dichotomy between facing the cost of data cleaning
+Since \emph{a priori}, the magnitude of data error is unknown, any amount of error can be biasing, and this presents a dichotomy between facing the cost of data cleaning
 or coping with consequences of unknown inaccuracy.
 In this article, we describe a middle ground that we call SampleClean \cite{wang1999sample}; where an analyst can clean a sample of data, and use this sample to improve an erroneous query result.
 The intruiging part of SampleClean is that while the query result is approximate, this approximation error is boundable--unlike the unknown data error.
 The tightness of this bound is parametrized by a flexible cleaning cost.
 
 The case for SampleClean is analagous to the case for Approximate Query Processing \cite{DBLP:conf/icde/OlkenR92, olken1993random, garofalakis2001approximate, AgarwalMPMMS13} (AQP).
-For decision problems, exploratory analysis problems, and visualization, it often suffices to return the an approximate query result bounded in confidence intervals; thus saving significant processing costs.
-In many common aggregates, the samples-to-accuracy trade off tends to vary as $O(\frac{1}{\sqrt{n}})$, and therefore every additional $\epsilon$ factor of accuracy costs quadratically more.
+For decision problems, exploratory analysis problems, and visualization, it often suffices to return an approximate query result bounded in confidence intervals; thus saving significant processing costs.
+In many common aggregates, the samples-to-accuracy trade off tends to vary as $O(\frac{1}{\sqrt{n}})$, and therefore every additional $\epsilon$ factor of accuracy costs quadratically more. 
 In applications where approximation can be tolerated, sampling avoids the expensive ``last mile" of processing and timely answers facilitate improved user experiences and faster analysis.
 
 In traditional AQP, approximation necessarily sacrifices accuracy for reduced latency. 
@@ -37,6 +37,9 @@ First, a direct extension of AQP which estimates the true query result based on 
 Next, using a sample of cleaned data to correct the error in a query result over the dirty data.
 We will show that there is an interesting theoretical tradeoff between these approaches, where the first approach is \emph{robust} as its accuracy is independent of the magnitude of data error, and the second approach is \emph{sample-efficient} as its accuracy is less dependent on sample size.
 
+
+\jn{The relationship of the four projects are not very clear. Maybe we can say something more ambitious. For example, we can say that ``the sampling idea used for AQP opened up a new research direction; we believe the new SampleClean idea can do the same thing. We applied this idea to many domains, and found that it can address many challenging problems that are very hard to solve before. After that, we can introduce our stale view cleaning and ActiveClean work in the MV and ML settings to demonstrate how powerful this idea is. In the end, we can talk about the system a little bit."}
+
 In this article, we highlight four projects based on the SampleClean idea:
 
 \vspace{0.5em}
@@ -52,3 +55,6 @@ Aggregate queries are approximated from a stale MV using a small sample of up-to
 
 \vspace{0.5em}
 \noindent \textbf{Wisteria \cite{haas2015wisteria}: } In Wisteria, we implemented the ideas described in the SampleClean work in a real, distributed data cleaning system. This involved designing an algebra for data cleaning transformations and optimizations for their execution.
+
+
+\jn{Would be good to add a paragraph to describe how the following sections are organized}

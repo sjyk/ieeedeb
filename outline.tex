@@ -94,7 +94,9 @@
 \newcommand{\Predicatec}[1]{\texttt{Predicate}(\texttt{Correct}($#1$))\xspace}
 \newcommand{\Dedup}[2]{\texttt{Numdup}\ensuremath(#1)\xspace}
 
-\def\ojoin{\setbox0=\hbox{$\bowtie$}%
+\newcommand{\jn}[1]{\textcolor{red}{\{\{JN: #1\}\}}\xspace}
+
+\def\ojoin{\setbox0=\hbox{$\bowtie$}% 
   \rule[-.02ex]{.25em}{.4pt}\llap{\rule[\ht0]{.25em}{.4pt}}}
 \def\leftouterjoin{\mathbin{\ojoin\mkern-5.8mu\bowtie}}
 \def\rightouterjoin{\mathbin{\bowtie\mkern-5.8mu\ojoin}}
@@ -129,7 +131,7 @@ data error and applies an extension of SampleClean for scalable incremental
 maintenance. ActiveClean extends SampleClean to a class of analytics
 that we call convex data analysis (subsuming common aggregate queries
 and including Machine Learning). Finally, we describe a number of
-open problems and future directions for the project.
+open problems and future directions for the project. \jn{The name of SampleClean is a little confusing. It has two meanings in your description.}
 \end{abstract}
 
 \input{intro.tex}

@@ -1,8 +1,11 @@
-\section{ActiveClean}
+\section{ActiveClean\jn{Would be good to add a selling point about ActiveClean in the section title}}
+
+
+
 Analytics is moving beyond SQL, and the growing popularity of predictive models \cite{bdas, alexandrov2014stratosphere, crotty2014tupleware, hellerstein2012madlib} leads to additional challenges in managing dirty data.
 Predictive models rely on learning relationships between features and labels, and systematic corruption \cite{taylor1982introduction} (i.e., corruption that disproportionately affects certain data) can mask or even introduce spurious new relationships.
 Furthermore, the high dimensionality of these models can amplify small problems \cite{xiaofeature} resulting in error-prone predictions even when trained on mostly clean data.
-Our key insights is that predictive models are essentially high dimensional aggregate queries but that dimensionality leads to new challenges.
+Our key insight is that predictive models are essentially high dimensional aggregate queries but that dimensionality leads to new challenges.
 
 \subsection{Motivation}
 Consider a music recommender system in which due to a software bug, all users from Europe have an incorrect age attribute defaulted to ``18-24".
@@ -10,15 +13,20 @@ A recommendation model trained on this data may spuriously learn a correlation r
 A bug, which ostensibly affected only the European users' records, can affect predictions to all users aged ``18-24".
 Systematic corruption prior to featurization is not addressed in the robust Machine Learning literature which focuses on the resilience to outliers (e.g., age ``150").
 
+
 Unfortunately, a naive application of the techniques proposed in the previous sections have problems.
 Consider the direct estimation technique for aggregate queries.
 Accurate model training may require a large amount of training data and $k$ examples may not be enough for a viable model.
 High-dimensional predictive models may actually be more sensitive to lack of training data than data error.
 On the other hand, the correction technique and the bounds were derived for a small class of aggregates.
 This does not generalize to an arbitrary statistical model. 
-The goal of this work is to derive a scheme analagous to the correction technique but theoretically justified for predictive analytics.
+The goal of this work is to derive a scheme analogous to the correction technique but theoretically justified for predictive analytics.
 
 \subsection{Simpson's Paradox}
+
+\jn{Need to add several sentences to explain why we present the Simpson's Paradox here.  }
+
+
 Suppose, we dropped the unbiased estimate requirement and just want to train a viable model that reflects some of the clean data.
 Let $k$ records be cleaned, but all of the remaining dirty records are retained in the dataset.
 Figure \ref{update-arch1} highlights the dangers of this approach on a very simple dirty dataset and a linear regression model i.e., the best fit line for two variables. 
@@ -38,6 +46,9 @@ Figure \ref{update-arch1}c also illustrates that, even in two dimensions, models
 \end{figure}
 
 \subsection{ActiveClean}
+
+\jn{Remove this section? It looks a little werid to put this section here because you haven't defined the ActiveClean problem at this point and the key idea of ActiveClean has also been repeatly described in the Model Updates section (Sec 6.5). }
+
 In ActiveClean, we propose a new methodology for applying budgeted data cleaning in conjunction with machine learning.
 Rather than cleaning before model training, data cleaning can be directly integrated into the training process (i.e., into the Gradient Descent Loop), so that ActiveClean can ensure provable guarantees such as convergence and error bounds.
 In ActiveClean, data are cleaned in small random batches and the model is incrementally updated based on the results.

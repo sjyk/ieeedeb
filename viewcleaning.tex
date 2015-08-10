@@ -1,4 +1,7 @@
-\section{View Cleaning \cite{krishnan2015svc}}
+\section{View Cleaning: Scale View as Dirty Data \cite{krishnan2015svc}}
+
+
+
 In follow-up work, we explored the generalization of SampleClean.
 Suppose the relation $R$ is in fact a derived relation $V$ of an underlying dirty database $D$.
 We explored how we can efficiently apply a data cleaning operation to a sample of $V$.
@@ -78,6 +81,8 @@ that cleans a uniform random sample of the stale view $V$ to produce a ``clean" 
 view $S_{clean}$.
 \item \emph{(Problem 2. Query Result Estimation)} Given an aggregate query $q$ and the state query result $q(S)$, we use $S_{clean}$ and $S$ to estimate the up-to-date result.
 \end{enumerate} 
+
+\jn{The problem definition is a little messed up. ``Stale View Cleaning" should be problem 1; there's no problem 2.}
 
 \noindent\textbf{Stale Sample View Cleaning: }
 The first problem addressed by \svc is how to clean a sample of the stale materialized view.
@@ -165,6 +170,8 @@ V' = \mathcal{C}(S,\mathcal{D},\partial \mathcal{D})
 \]
 Thus, it addresses Problem 1, and with the materialized sample of up-to-date rows, we can apply the direct estimates and corrections in the previous section to estimate the result bounded in confidence intervals.
 
+
+
 \subsection{Results: Video Streaming Log Analysis}
 We evaluate \svc on Apache Spark~1.1.0 with 1TB of logs from a video streaming company, Conviva \cite{conviva}.
 This is a denormalized user activity log corresponding to video views and various metrics such as data transfer rates, and latencies.
@@ -181,6 +188,8 @@ We generated aggregate random queries over this view by taking either random tim
  \includegraphics[scale=0.16]{figs/con_4.pdf} \vspace{-1.5em}
  \caption{(a) We compare the maintenance time of \svc with a 10\% sample and full incremental maintenance, and find that as with TPCD \svc saves significant maintenance time. (b) We also evaluate the accuracy of the estimation techniques. \label{conv-1}}\vspace{-1.5em}
 \end{figure}
+
+\jn{Explain what IVM, SVC-10\%, Stale, SVC+AQP-10\%, and SVC+CORR-10\% stand for. }
 
 In Figure \ref{conv-1}(a), we show that on average over all the views, \svc-10\% gives a 7.5x speedup.
 For one of the views full incremental maintenance takes nearly 800 seconds, even on a 10-node cluster, which is a very significant cost.
