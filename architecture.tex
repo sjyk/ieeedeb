@@ -8,12 +8,12 @@ At a high-level all SampleClean projects strive to apply a user-specified data t
 \noindent\textbf{Initialization: } The system is initialized with a dirty relation $R$, a user specified data cleaning technique $C(\cdot)$, a budget $k$, and some analytic query to run $q$. SampleClean provides a framework to execute the cleaner no more than $k$ times and estimate the result of $q$.  
 
 \vspace{0.5em}
-\noindent\textbf{Analytics: } In the basic SampleClean setting, the supported queries are aggregates of the form:
+\noindent\textbf{Analytics: } In the basic problem setting, the supported queries are aggregates of the form:
 \begin{alltt}
 q = SELECT \textsf{f}(attrs) FROM R WHERE predicate GROUP BY attrs
 \end{alltt}
-In SampleClean, we consider \avgfunc, \sumfunc, \countfunc, and \varfunc.
-In View Cleaning, we extend this set of queries to any queries that can be estimated with a statistical bootstrap \cite{agarwalknowing}. \jn{Please doublecheck this sentence. Based on my understanding, the statistical bootstrap is for getting bounds, not for estimating query results. }
+In \sampleclean, we consider \avgfunc, \sumfunc, \countfunc, and \varfunc.
+In View Cleaning, we extend this set of queries to any queries whose confidence intervals can be estimated with a statistical bootstrap \cite{agarwalknowing}. 
 Finally, in ActiveClean, we extend this work to consider Machine Learning models as aggregate queries.
 
 \vspace{0.5em}
@@ -67,7 +67,7 @@ One of the goals of this project is to develop reliable estimation techniques th
 \noindent\textbf{Confidence Intervals: } SampleClean bounds every estimate in a confidence interval. This is a significant result since, without data cleaning, the error is potentially unbounded. Bounded estimates (even if loose) give the analyst guidance on how inaccurate an estimate is.
 
 \subsection{Wisteria: Implementing SampleClean \cite{haas2015wisteria}}
-We implemented the ideas in SampleClean as a part of a distributed data cleaning library named Wisteria.
+We implemented the ideas in SampleClean as a part of a distributed data cleaning library named Wisteria (Figure \ref{fig:ex-plan}).
 Wisteria is built on the Berkeley Data Analytics Stack with numerous optimized data cleaning primitives.
 This insight of this project was that the data cleaning process is inherently iterative, with evolving cleaning workflows that 
 start with basic exploratory data analysis on small samples of dirty data, then refine analysis with 
@@ -84,7 +84,7 @@ The samples also serve to tune data cleaning plans and a recommendation engine p
 1) The analyst starts with an exploratory plan that uses a sample to evaluate a simple address extraction method.
 2) A plan that applies the method to the entire dataset. The quality is unsatisfactory. 
 3) An alternate plan that uses manual crowd extraction. The quality is now high, but the crowd-based extractor is slow. 
-4) A hybrid plan that sends only difficult webpages to the crowd, maximizing accuracy without sacrificing latency. \reminder{I didn't found the reference to this figure in the text. }}
+4) A hybrid plan that sends only difficult webpages to the crowd, maximizing accuracy without sacrificing latency.}
 \label{fig:ex-plan}
 \end{SCfigure}
 

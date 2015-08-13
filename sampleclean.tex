@@ -1,9 +1,5 @@
-\section{The Seminal Work on SampleClean \cite{wang1999sample}}
-
-
-\jn{This is the same comment as the one that I gave in the Abstract, but I haven't figured out a better way to solve it. I changed the title of this section to address this problem. Please feel free to change it if you don't like it.}
-
-This section introduces the basic SampleClean framework where the results of aggregate queries on dirty relations are estimated and bounded. The subsequent variants of the problem will build on the formalization and results of this section.
+\section{\\sampleclean: Aggregate Query Processing on Dirty Data}
+This section introduces the \sampleclean framework where the results of aggregate queries on dirty relations are estimated and bounded. The subsequent variants of the problem will build on the formalization and results of this section.
 
 \subsection{Problem Setup}
 
@@ -20,7 +16,7 @@ For each row $r \in R$ the user-specified data cleaning technique must provide r
 
 \vspace{.25em}
 
-\noindent\textbf{Queries: } SampleClean addresses aggregate queries of the form:
+\noindent\textbf{Queries: } \sampleclean addresses aggregate queries of the form:
 \begin{alltt}
 SELECT \textsf{f}(a) FROM R WHERE predicate GROUP BY gb_attrs
 \end{alltt}
@@ -28,8 +24,8 @@ where f is \avgfunc, \sumfunc, or \countfunc.
 
 \vspace{.25em}
 
-\begin{problem}[Sample-and-Clean]
-Given a dirty relation $R$, and a user-specified data cleaning function $C(\cdot)$, the Sample-and-Clean problem is to estimate the result of an aggregate query $q$ applied to the hypothetical cleaned relation $q(R_{clean})$ with a budget of applying $C$ to at most $k$ rows of $R$. 
+\begin{problem}[\sampleclean]
+Given a dirty relation $R$, and a user-specified data cleaning function $C(\cdot)$, the \sampleclean problem is to estimate the result of an aggregate query $q$ applied to the hypothetical cleaned relation $q(R_{clean})$ with a budget of applying $C$ to at most $k$ rows of $R$. 
 \end{problem}
 
 \subsection{Sample Estimates}\label{subsec:resultestimation}
@@ -67,9 +63,9 @@ Our goal is to define a new function $\saqpplusfunc(\cdot)$, an analog to $\saqp
 \jn{Do you think that we need to mention importance sampling somewhere?}
 
 \subsubsection{Attribute Errors}
-This sampling statistics change only affected duplication errors, attributes errors only affects an individual row. \jn{something wrong with the sentence.}
+Attribute errors affect an invidual row and thus do not change the sampling statistics.
 Consequently, if we apply the $\saqpfunc(\cdot)$ to the corrected tuple, we still preserve the uniform sampling properties of the sample $S$.
-In other words, the probability that a given tuple is sampled is not changed by our correction of value and condition errors \jn{value and condition errors?}, thus we define $\saqpplusfunc(t)$ as:
+In other words, the probability that a given tuple is sampled is not changed by the cleaning, thus we define $\saqpplusfunc(t)$ as:
 \[\small
 \saqpplusfunc(t) = \saqpfunc \left( \Correct{t} \right).
 \]
@@ -92,6 +88,8 @@ For each $r_{i}\in S$, let $m_i$ denote its number of duplicates in $R$.
 (2) For an \avgfunc query, the result has to be scaled by the duplication rate $d=\frac{k}{k'}$,
 where $k'=\sum_i\frac{1}{m_i}$, so using $\saqpplusfunc(r_i)=d\cdot\frac{\saqpfunc(r_i)}{m_i}$ yields an unbiased estimate.
 \end{lemma}
+
+These results follow directly from importance sampling \cite{liu1996metropolized}, where expected values can be estimated with respect to one probability measure, and corrected to reflect the expection with repsect to another.
 
 \subsubsection{Summary and Algorithm}
 In Table \ref{tbl:transform-new}, we describe the transformation $\saqpplusfunc(\cdot)$.
@@ -188,7 +186,7 @@ there is also a tradeoff between answering more selective queries and maintenanc
 Microsoft maintains a public database of academic publications\footnote{\scriptsize http://academic.research.microsoft.com (Accessed Nov. 3, 2013)}.
 The errors in this dataset are primarily duplicated publications and mis-attributed publications.
 We selected publications from three database researchers: Jeffrey Ullman, Michael Franklin, and Rakesh Agarwal.
-To clean a sample of publications, we first manually removed the mis-attributions in the sample. Then, we applied the technique used in~\cite{DBLP:journals/pvldb/WangKFF12} \jn{the citation is missing} to identify potential duplicates for all of publications in our sample, and manually examined the potential matches.  
+To clean a sample of publications, we first manually removed the mis-attributions in the sample. Then, we applied the technique used in~\cite{wang2012crowder} \jn{the citation is missing} to identify potential duplicates for all of publications in our sample, and manually examined the potential matches.  
 For illustration purpose, we cleaned the entire dataset, and showed the cleaning results in Table~\ref{tbl:dataset:ms-academic}. 
 \begin{table}[!ht]\vspace{-1em}
 \centering\caption{Microsoft Academic Search Dataset.}\vspace{.5em} \label{tbl:dataset:ms-academic}
@@ -207,7 +205,7 @@ Michael Franklin & 560 & 173 & 65.09\% & 1.13\\
 %\reminder{May be we need to save some space.}
 %\caption{The Microsoft Academic Search Dataset. We manually cleaned the datasets for each of the authors.
 %This table shows the difference between the reported number of publications (AllDirty) and the number of publications after our cleaning (AllClean).
-%We also include the false positive percentage and the duplication ratio (Section \ref{sec:sampleclean}) to illustrate the type of errors.}\label{dataset:ms-academic}\vspace{-1em}
+%We also include the false positive percentage and the duplication ratio (Section \ref{sec:\sampleclean}) to illustrate the type of errors.}\label{dataset:ms-academic}\vspace{-1em}
 \end{table}
 
 This table shows the difference between the reported number of publications (Dirty) and the number of publications after our cleaning (Clean).
@@ -216,16 +214,16 @@ Both Rakesh Agarwal and Michael Franklin had a large number of mis-attributed pa
 Jeffery Ullman had a comparatively larger number of duplicated papers (182).
 
 If we were interested in ranking the authors, the dirty data would give us the wrong result. 
-In Figure \ref{exp:ms-academic-ranking}, we plot the probability of incorrect \reminder{correct?} ranking as a function of number of cleaned records with SampleClean.
+In Figure \ref{exp:ms-academic-ranking}, we plot the probability of a correct ranking as a function of number of cleaned records with \sampleclean.
 We show how we can return the correct ranking with 95\% probability after cleaning only 210 total samples.
 To achieve a correct ranking with 99\% probability, we require 326 samples to be cleaned.
 In comparison, AllDirty always returns an incorrect ranking.
-SampleClean provides a flexible way to achieve a desired confidence on decision based on dirty data queries.
+\sampleclean provides a flexible way to achieve a desired confidence on decision based on dirty data queries.
 
 \begin{SCfigure}
 %\includegraphics[width=0.78\textwidth]{figs/msacademic-paper-count.eps}
 \includegraphics[width=0.3\textwidth]{figs/msacademic-paper-ranking.eps}
-\caption{Even though the dirty result always returns an incorrect ranking, we can return the correct ranking with 95\% probability after cleaning only 210 total samples. To achieve a correct ranking with 99\% probability, we require 326 samples to be cleaned.\label{exp:ms-academic-ranking} \jn{enlarge font size}}
+\caption{Even though the dirty result always returns an incorrect ranking, we can return the correct ranking with 95\% probability after cleaning only 210 total samples. To achieve a correct ranking with 99\% probability, we require 326 samples to be cleaned.\label{exp:ms-academic-ranking}}
 
 \end{SCfigure}
 

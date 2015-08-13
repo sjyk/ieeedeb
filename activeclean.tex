@@ -1,7 +1,4 @@
-\section{ActiveClean\jn{Would be good to add a selling point about ActiveClean in the section title}}
-
-
-
+\section{ActiveClean: Machine Learning on Dirty Data}
 Analytics is moving beyond SQL, and the growing popularity of predictive models \cite{bdas, alexandrov2014stratosphere, crotty2014tupleware, hellerstein2012madlib} leads to additional challenges in managing dirty data.
 Predictive models rely on learning relationships between features and labels, and systematic corruption \cite{taylor1982introduction} (i.e., corruption that disproportionately affects certain data) can mask or even introduce spurious new relationships.
 Furthermore, the high dimensionality of these models can amplify small problems \cite{xiaofeature} resulting in error-prone predictions even when trained on mostly clean data.
@@ -10,11 +7,10 @@ Our key insight is that predictive models are essentially high dimensional aggre
 \subsection{Motivation}
 Consider a music recommender system in which due to a software bug, all users from Europe have an incorrect age attribute defaulted to ``18-24".
 A recommendation model trained on this data may spuriously learn a correlation relationship between age ``18-24" and music liked by European users.
-A bug, which ostensibly affected only the European users' records, can affect predictions to all users aged ``18-24".
+A bug, which ostensibly affected only the European users' rows, can affect predictions to all users aged ``18-24".
 Systematic corruption prior to featurization is not addressed in the robust Machine Learning literature which focuses on the resilience to outliers (e.g., age ``150").
 
-
-Unfortunately, a naive application of the techniques proposed in the previous sections have problems.
+Unfortunately, a straight-forward application of the techniques proposed in the previous sections have problems.
 Consider the direct estimation technique for aggregate queries.
 Accurate model training may require a large amount of training data and $k$ examples may not be enough for a viable model.
 High-dimensional predictive models may actually be more sensitive to lack of training data than data error.
@@ -23,12 +19,9 @@ This does not generalize to an arbitrary statistical model.
 The goal of this work is to derive a scheme analogous to the correction technique but theoretically justified for predictive analytics.
 
 \subsection{Simpson's Paradox}
-
-\jn{Need to add several sentences to explain why we present the Simpson's Paradox here.  }
-
-
-Suppose, we dropped the unbiased estimate requirement and just want to train a viable model that reflects some of the clean data.
-Let $k$ records be cleaned, but all of the remaining dirty records are retained in the dataset.
+The challenge is that the high-dimensional models are very sentitive to systematic biases, and many of the techniques applied in practice suffer methodological problems.
+One technique to avoid dependence on sample size is ``write back" approach, where $k$ rows are cleaned and written back to the database.
+Let $k$ rows be cleaned, but all of the remaining dirty rows are retained in the dataset.
 Figure \ref{update-arch1} highlights the dangers of this approach on a very simple dirty dataset and a linear regression model i.e., the best fit line for two variables. 
 One of the variables is systematically corrupted with a translation in the x-axis (Figure \ref{update-arch1}a).
 The dirty data is marked in brown and the clean data in green, and their respective best fit lines are in blue.
@@ -45,17 +38,8 @@ Figure \ref{update-arch1}c also illustrates that, even in two dimensions, models
 (c) Small samples of only clean data can result in similarly inaccurate models. \label{update-arch1}}
 \end{figure}
 
-\subsection{ActiveClean}
-
-\jn{Remove this section? It looks a little werid to put this section here because you haven't defined the ActiveClean problem at this point and the key idea of ActiveClean has also been repeatly described in the Model Updates section (Sec 6.5). }
-
-In ActiveClean, we propose a new methodology for applying budgeted data cleaning in conjunction with machine learning.
-Rather than cleaning before model training, data cleaning can be directly integrated into the training process (i.e., into the Gradient Descent Loop), so that ActiveClean can ensure provable guarantees such as convergence and error bounds.
-In ActiveClean, data are cleaned in small random batches and the model is incrementally updated based on the results.
-Similar to Active Learning, ActiveClean selects the most valuable records to clean with higher probability, however, it applies a number of optimizations that exploit the data cleaning setting such as avoiding data that is expected to be clean, estimating of the effect of data cleaning for a record, and batching together updates from already cleaned data.
-
 \subsection{Problem Setup}
-This work focuses on an initial class of well analyzed predictive analytics problems; ones that can be expressed as the minimization of convex loss functions.
+This work focuses on a class of well analyzed predictive analytics problems; ones that can be expressed as the minimization of convex loss functions.
 Examples includes all generalized linear models (including linear and logistic regression), all variants of support vector machines, and in fact, \avgfunc and \medfunc are also special cases. 
 
 Formally, for labeled training examples $\{(x_{i},y_{i})\}_{i=1}^{N}$, the problem is to find a vector of \emph{model parameters} $\theta$ by minimizing a loss function $\phi$ over all training examples:
@@ -96,9 +80,9 @@ It is well known that even for an arbitrary initialization SGD makes significant
 Furthermore in this setting, the dirty model can be much more accurate than an arbitrary initialization; leading to highly accurate models without processing the entire data.
 
 ActiveClean is initialized with $\theta^{(1)} = \theta^{(d)}$ which is the dirty model.
-At each iteration $t=\{1,...,T\}$, the cleaning is applied to a batch of data $b$ selected from the set of candidate dirty records $R$.
+At each iteration $t=\{1,...,T\}$, the cleaning is applied to a batch of data $b$ selected from the set of candidate dirty rows $R$.
 Then, an average gradient is estimated from the cleaned batch and the model is updated.
-Iterations continue until $k = T \cdot b$ records are cleaned.
+Iterations continue until $k = T \cdot b$ rows are cleaned.
 
 \begin{enumerate}[noitemsep]
 	\item Calculate the gradient over the sample of clean data and call the result $g_S(\theta^{(t)})$
@@ -111,11 +95,11 @@ Iterations continue until $k = T \cdot b$ records are cleaned.
 \subsection{Optimizations}
 ActiveClean has a number of additional optimizations exploiting the structure of Convex Data Analytics problems.
 
-\noindent\textbf{Detector: } In this step, the detector select a candidate set of dirty records $R_{dirty} \subseteq R$. There are two techniques to do this: (1) an \emph{a priori} case, and (2) and an adaptive case. In the \emph{a priori} case, the detector knows which data is dirty in advance. In the adaptive case, the detector learns classifier based on previously cleaned data to detect corruption in uncleaned data. This allows ActiveClean to prioritize cleaning data expected to be dirty. 
+\noindent\textbf{Detector: } In this step, the detector select a candidate set of dirty rows $R_{dirty} \subseteq R$. There are two techniques to do this: (1) an \emph{a priori} case, and (2) and an adaptive case. In the \emph{a priori} case, the detector knows which data is dirty in advance. In the adaptive case, the detector learns classifier based on previously cleaned data to detect corruption in uncleaned data. This allows ActiveClean to prioritize cleaning data expected to be dirty. 
 
 \vspace{0.5em}
 
-\noindent\textbf{Non-uniform Sampler: } The sampler draws a sample of records $S_{dirty} \subseteq R_{dirty}$. This is a non-uniform sample where each record $r$ has a sampling probability $p(r)$.
+\noindent\textbf{Non-uniform Sampler: } The sampler draws a sample of rows $S_{dirty} \subseteq R_{dirty}$. This is a non-uniform sample where each record $r$ has a sampling probability $p(r)$.
 We derive the theoretical minimum variance sampling distribution, which is impossible to realize as it requires knowing the clean data in advance. Therefore, we use a first order first-order approximation of this distribution based on estimates of the clean data. 
 
 \vspace{0.5em}
