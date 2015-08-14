@@ -2,7 +2,7 @@
 The subsequent sections overview the SampleClean projects, and this section describes some of the general principles, challenges, and design goals. 
 
 \subsection{Architecture}
-At a high-level all SampleClean projects strive to apply a user-specified data transformation to a maximum of $k$ out of $N$ rows in a relation, and estimate the result of some data analytics if the entire relation was cleaned. Figure \ref{fig:arch} describes the basic architecture of these problems. 
+At a high-level all SampleClean projects apply a user-specified data transformation to a maximum of $k$ out of $N$ rows in a relation, and estimate the \emph{true} result, i.e., if all the data were transformed, of some data analytics. Figure \ref{fig:arch} describes the basic architecture of these problems. 
 
 \vspace{0.5em}
 \noindent\textbf{Initialization: } The system is initialized with a dirty relation $R$, a user specified data cleaning technique $C(\cdot)$, a budget $k$, and some analytic query to run $q$. SampleClean provides a framework to execute the cleaner no more than $k$ times and estimate the result of $q$.  
@@ -67,7 +67,7 @@ One of the goals of this project is to develop reliable estimation techniques th
 \noindent\textbf{Confidence Intervals: } SampleClean bounds every estimate in a confidence interval. This is a significant result since, without data cleaning, the error is potentially unbounded. Bounded estimates (even if loose) give the analyst guidance on how inaccurate an estimate is.
 
 \subsection{Wisteria: Implementing SampleClean \cite{haas2015wisteria}}
-We implemented the ideas in SampleClean as a part of a distributed data cleaning library named Wisteria (Figure \ref{fig:ex-plan}).
+The ideas in SampleClean are implemented as a part of a distributed data cleaning library named Wisteria (Figure \ref{fig:ex-plan}).
 Wisteria is built on the Berkeley Data Analytics Stack with numerous optimized data cleaning primitives.
 This insight of this project was that the data cleaning process is inherently iterative, with evolving cleaning workflows that 
 start with basic exploratory data analysis on small samples of dirty data, then refine analysis with 

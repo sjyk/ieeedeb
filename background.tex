@@ -1,24 +1,22 @@
 \section{Background and Main Ideas}
 
-This section describes the key idea of SampleClean, namely, that sampling can be used to budget expensive data cleaning operations resulting in provable guarantees.
+This section describes the key idea of SampleClean, namely, that data cleaning can be integrated with approximate query processing leading to bounded approximations of clean query results for a fraction of the cleaning cost.
 
 \subsection{Data Cleaning is Often Expensive}
-A number of surveys of analysts report that data cleaning is one of the most time consuming steps \cite{kandel2012enterprise, nytimes}.
-A number of data cleaning frameworks have been recently proposed to address the problem of corrupted data at scale\cite{khayyat2015bigdansing, chu2015katara, sampleclean}.
+A number of surveys report that data cleaning is one of the most time consuming steps \cite{kandel2012enterprise, nytimes}.
+Data cleaning frameworks have been recently proposed to address the problem of corrupted data at scale\cite{khayyat2015bigdansing, chu2015katara, sampleclean}.
 As errors can be domain- or dataset-specific, data cleaning is an inherently human-driven process and can require a significant amount of developer effort in writing software or rules to fix the corruption.
 Automated fixes may not be reliable and can require human confirmation \cite{DBLP:journals/pvldb/YakoutENOI11}.
 One way to scale up human computation is crowdsourcing which has shown recent success in entity resolution and value filling \cite{gokhale2014corleone, park2014crowdfill, sampleclean,chu2015katara}.
 However, crowdsourcing comes with the costs of significant additional latency (orders of magnitude slower than data processing) and the overhead of managing human workers.
 
 \subsection{Traditional Approximate Query Processing}
-To understand how we can integrate data cleaning and sampling, let us first understand how traditional AQP is affected by dirty data.
-The basic idea of AQP is to approximate the result of a query $Q$ on a large relation $R$.
+The basic idea of AQP is to approximate the result of a query $Q$ on a large relation $R$, instead of processing the entire relation.
 A number of approximation schemes have been proposed including using Sampling, Wavelets, Sketching, and Hashing (see Cormode et al. for a survey \cite{DBLP:journals/ftdb/CormodeGHJ12}).
-
-In this article, we will focus on Sampling-based approximations.
+This article focuses on Sampling-based approximations.
 Sampling-based approximate query processing (SAQP) is a powerful technique that allows for fast approximate results on large datasets. 
 It has been well studied in the database community since the 1990s~\cite{DBLP:conf/sigmod/HellersteinHW97,DBLP:conf/sigmod/AcharyaGPR99,DBLP:conf/icde/OlkenR92, OlkenR86}, and methods such as BlinkDB~\cite{DBLP:conf/eurosys/AgarwalMPMMS13} have drawn renewed attention in recent big data research. 
-An important aspect of SAQP is confidence intervals, as many types of aggregates can be bounded with techniques such as concentration inequalities (e.g., Hoeffding bounds), large-deviation inequalities (e.g., Central Limit Theorem), or empirically (e.g., bootstrap). 
+An important aspect of SAQP is confidence intervals, as many types of aggregates can be bounded with techniques such as concentration inequalities (e.g., Hoeffding bounds), large-deviation inequalities (e.g., Central Limit Theorem), or empirically (e.g., Bootstrap). 
 
 Suppose, there is a relation $R$ and a uniform sample $S$.
 SAQP applies a query $Q$ to $S$ (possibly with some scaling $c$) to return an estimate: 
@@ -55,7 +53,7 @@ We defined a class of analytics called Convex Data Analytics, and show how the c
 
 
 \subsubsection{Two Sources of Errors: Sampling Error and Data Error}
-Let us consider the case when the data is dirty.
+Now consider the case when the data is dirty.
 If $R$ is dirty, then there is a true relation $R_{clean}$.
 \[
 Q(R_{clean}) \ne Q(R) \approx est = c \cdot Q(S)
@@ -74,12 +72,12 @@ Thus, the bounds returned by a typical AQP framework on dirty data would neglect
 It is possible that $R_{clean} \ne R$ but $\epsilon_c=0$.
 Consider a \sumfunc query on the relation $R(a)$, where $a$ is a numerical attribute.
 If half of the rows in $R$ is corrupted with $+1$ and the other half are corrupted with $-1$, then $Q(R_{clean}) = Q(R)$.
-In the data cleaning setting, we are interested in \emph{systematic errors} where $\epsilon_c > 0$ \cite{taylor1982introduction}. 
+The interesting problem is when there are \emph{systematic errors}\cite{taylor1982introduction} i.e., $\epsilon_c > 0$. 
 In other words, the corruption that is correlated with the data, e.g., where every record is corrupted with a $+1$.
 
 \subsubsection{Key Idea I: Direct Estimate vs. Correction}
 The key quantity of interest in this work is $\epsilon_c$, and to be able to bound
-a query result on dirty data, we need to either ensure $\epsilon_c$ is 0 or bound $\epsilon_c$.
+a query result on dirty data, requires that $\epsilon_c$ is 0 or bound $\epsilon_c$.
 There are two ways in which this can be done: direct estimates and corrections.
 
 \vspace{0.5em}
@@ -88,7 +86,7 @@ Data cleaning and sampling may change the statistical and scaling properties of 
 There are a couple of important points to note about this techniques.
 First, as in SAQP, the direct estimate only processes a sample of data.
 Next, since it processes a cleaned sample of data, at no point is there a dependence on the dirty data.
-As we will show later in the paper, the direct estimate returns a result whose accuracy is independent of the magnitude or rate of data error. 
+As we will show later in the article, the direct estimate returns a result whose accuracy is independent of the magnitude or rate of data error. 
 From a theoretical perspective, for some types of data cleaning, this technique ensures that $\epsilon_c = 0$ within the sample.
 
 \vspace{0.5em}
@@ -106,7 +104,7 @@ However, as we will later show, if errors are rare this technique gives signific
 \end{SCfigure}
 
 \subsubsection{Key Idea II: Sampling to Improve Accuracy}
-A small sample of clean data can improve impove query accuracy accuracy.
+A small sample of clean data can improve improve query accuracy accuracy.
 Figure \ref{fig:est2} plots error as a function of the cleaned sample size on a corrupted TPCH dataset for a direct estimate, correction, and AllDirty (query on the full dirty data).
 In both cases, there is a break-even point (in terms of number of cleaned samples) when the data cleaning has mitigated more data error than the approximation error introduced by sampling.
 After this point, SampleClean improves query accuracy in comparison to AllDirty.

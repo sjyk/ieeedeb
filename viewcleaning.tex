@@ -37,7 +37,7 @@ This means that at least one of the delta relations in $\partial \mathcal{D}$ is
 
 \vspace{0.5em}
 
-\noindent \textbf{Maintenance:} There may be multiple ways (e.g., incremental maintenance or recomputation) to maintain a view $V$, and we denote the up-to-date view as $V'$.
+\noindent \textbf{Maintenance:} There may be multiple ways (e.g., incremental maintenance or re-computation) to maintain a view $V$, and we denote the up-to-date view as $V'$.
 We formalize the procedure to maintain the view as a \emph{maintenance strategy} $\mathcal{M}$.
 A maintenance strategy is a relational expression the execution of which will return $V'$.
 It is a function of the database $\mathcal{D}$, the stale view $V$, and all the insertion and deletion relations $\partial \mathcal{D}$. 
@@ -78,9 +78,6 @@ that cleans a uniform random sample of the stale view $V$ to produce a ``clean" 
 view $S_{clean}$.
 \item \emph{Query Result Estimation} Given an aggregate query $q$ and the state query result $q(S)$, we use $S_{clean}$ and $S$ to estimate the up-to-date result. 
 \end{enumerate} 
-
-\noindent\textbf{Stale Sample View Cleaning: }
-The first problem addressed by \svc is how to clean a sample of the stale materialized view.
 
 \vspace{0.25em}
 \noindent\textbf{Stale View Cleaning Problem: }\sloppy

@@ -87,7 +87,7 @@
 \newcommand{\saqpfunc}{\ensuremath{\phi }\xspace}
 \newcommand{\saqpplusfunc}{\ensuremath{\phi_{\clean} }\xspace}
 \newcommand{\clean}{\ensuremath{\texttt{clean} }\xspace}
-\newcommand{\sampleclean}{SampleCleanAgg}
+\newcommand{\sampleclean}{SampleCleanAgg\xspace}
 
 \newcommand{\Correct}[1]{\texttt{Correct}\ensuremath(#1)\xspace}
 \newcommand{\Remove}[2]{\texttt{Remove}\ensuremath(#1, #2)\xspace}
@@ -122,11 +122,11 @@ to fix the corruption. Since \emph{a priori}, the magnitude of data
 error is unknown, any amount of error is potentially biasing, and
 this presents a dichotomy between facing the cost of data cleaning
 or coping with consequences of unknown inaccuracy. In this article,
-we present a line of work called SampleClean, which allows the analyst
+we describe a line of work called SampleClean, which allows the analyst
 to clean a sample of data and estimate the results (with provable
 guarantees) of some types of analytics--building on results in Approximate
 Query Process (AQP). We describe three projects: \sampleclean, Stale
-View Cleaning, and ActiveClean. \sampleclean returns bounded estimates
+View Cleaning, and ActiveClean. \sampleclean~returns bounded estimates
 of SUM, COUNT, and AVG queries using a sample of cleaned data. Stale
 View Cleaning models staleness in Materialized Views as a type of
 data error and the same techniques for approximate incremental view maintenance. ActiveClean extends the framework to a class of analytics

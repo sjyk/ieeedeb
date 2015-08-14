@@ -1,20 +1,14 @@
 \section{Conclusion}
-A perennial challenge in data analytics is presence of dirty data
+An important challenge in data analytics is presence of dirty data
 in the form of missing, duplicate, incorrect or inconsistent values.
 Data analysts report that data cleaning remains one of the most time
 consuming steps in the analysis process, and data cleaning can require
 a significant amount of developer effort in writing software or rules
 to fix the corruption. 
-
+SampleClean studies the integration of Sample-based Approximate Query Processing and data cleaning; to provide analysts a tradeoff between cleaning the entire dataset and avoiding cleaning altogether.
 To the best of our knowledge, this is the first work to marry data cleaning with sampling-based query processing.
-In traditional AQP, approximation necessarily sacrifices accuracy for reduced latency. 
-However, SampleClean tradesoff data transformation cost for gradual improvements in query accuracy.
-While SampleClean introduces approximation error, the data cleaning mitigates errors in query results.
-The result is bounded approximations of clean aggregate query results.
-Since \emph{a priori}, the magnitude of data
-error is unknown, any amount of error is potentially biasing, and
-without SampleClean, analysts face a dichotomy between facing the cost of data cleaning
-or coping with consequences of unknown inaccuracy.
+While sampling introduces approximation error, the data cleaning mitigates errors in query results.
+This idea opened up a number of new research opportunities, and we applied the same principles to other domains such as Materialized View Maintenance and Machine Learning.
 
 \vspace{1.5em}
 

@@ -19,7 +19,7 @@ This does not generalize to an arbitrary statistical model.
 The goal of this work is to derive a scheme analogous to the correction technique but theoretically justified for predictive analytics.
 
 \subsection{Simpson's Paradox}
-The challenge is that the high-dimensional models are very sentitive to systematic biases, and many of the techniques applied in practice suffer methodological problems.
+The challenge is that the high-dimensional models are very sensitive to systematic biases, and many of the techniques applied in practice suffer methodological problems.
 One technique to avoid dependence on sample size is ``write back" approach, where $k$ rows are cleaned and written back to the database.
 Let $k$ rows be cleaned, but all of the remaining dirty rows are retained in the dataset.
 Figure \ref{update-arch1} highlights the dangers of this approach on a very simple dirty dataset and a linear regression model i.e., the best fit line for two variables. 
@@ -71,7 +71,7 @@ Given these inputs, the ActiveClean problem is to return a \textbf{reliable} est
 \emph{Reliable} precisely means that the expected error in this estimate (i.e., L2 difference w.r.t a model trained on a fully cleaned dataset) is bounded above by a monotonically decreasing function in $k$ and a monotonically decreasing function of the error of the dirty model. In other words, more cleaning implies more accuracy, and less initial error implies faster convergence.
 
 \subsection{Model Updates}
-The main insight of this work is that, in Convex Data Analytics, sampling is natually part of the query processing.
+The main insight of this work is that, in Convex Data Analytics, sampling is naturally part of the query processing.
 Mini-batch stochastic gradient descent (SGD) is an algorithm for finding the optimal value
 given the convex loss and data.
 In mini-batch SGD, random subsets of data are selected at each iteration and the average gradient is computed for every batch.
