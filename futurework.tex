@@ -1,22 +1,24 @@
 \section{Future Work and Open Problems}
+
+
 We further describe a number of open theoretical and practical problems to challenge the community:
 
 \vspace{0.5em}
-\noindent \textbf{Completeness: } For aggregate queries in the budgeted data cleaning setting,
-variance of the clean data $\sigma_c^2$, variance of the pairwise differences between clean and dirty data $\sigma_d^2$, and sample size $k$, is $O(\frac{\min \{\sigma_c,\sigma_d\}}{\sqrt{k}})$ (derived in this work) an optimal error bound?
-It is clear than in the parametric setting, where it additional information known this is not true. For example, if we know that all of the data was on a single line then it would require only two clean attributes to reconstruct the entire distribution. 
+\noindent \textbf{Completeness: }\jn{Why not called optimality?} For aggregate queries in the budgeted data cleaning setting,
+variance of the clean data $\sigma_c^2$, variance of the pairwise differences between clean and dirty data $\sigma_d^2$, and sample size $k$, is $O(\frac{\min \{\sigma_c,\sigma_d\}}{\sqrt{k}})$ (derived in this work) an optimal error bound? \jn{In this part, do you want to say the error bound is optimal or the estimated answer is optimal? }
+It is clear than in the parametric setting, where it additional information known this is not true\jn{This sentence looks weird.}.  For example, if we know that all of the data was on a single line then it would require only two clean attributes to reconstruct the entire distribution. 
 
 \vspace{0.5em}
 \noindent \textbf{Point-Lookup Dichotomy: } This work focuses on aggregate analytics such as queries and statistical models. In fact, as the selectivity of the analytics goes to 0 (i.e., single row lookup), the bounds in this work limit to infinity. However, in practice, cleaning a sample of data can be used to address such queries, where a statistical model can be trained on a sample of data to learn a mapping between dirty and clean data. An open problem is exploring how much looser is a generalization bound (e.g., via Learning Theory) compared to the bounds on aggregate queries.
 
 \vspace{0.5em}
-\noindent \textbf{Confirmation Bias and Sample Re-use: } In practice, users repeatedly query and clean the sample of data. As a result, estimates are highly correlated and potentially overfit to a sample. An open problem is designing efficient sampling techniques to mitigate the effects of \emph{confirmation bias} and discourage a user from overfitting analysis to the sample.
+\noindent \textbf{Confirmation Bias and Sample Re-use: } \jn{What is confirmation bias?} In practice, users repeatedly query and clean the sample of data. As a result, estimates are highly correlated and potentially overfit to a sample. An open problem is designing efficient sampling techniques to mitigate the effects of \emph{confirmation bias} and discourage a user from overfitting analysis to the sample.
 
 \vspace{0.5em}
-\noindent \textbf{Sample-based Optimization of Workflows: } In practical data cleaning workflows, there are numerous design choices e.g., whether or not to use crowdsourcing, similarity functions, etc. An open problem is using samples of cleaned data to estimate and tune parameters on data cleaning workflows.
+\noindent \textbf{Sample-based Optimization of Workflows: } In practical data cleaning workflows, there are numerous design choices e.g., whether or not to use crowdsourcing, similarity functions, etc. An open problem is using samples of cleaned data to estimate and tune parameters on data cleaning workflows. \jn{Put this to the second point?}
 
 \vspace{0.5em}
-\noindent \textbf{Black-box Applications: } SampleClean exploits the structure of the application to budget data cleaning. However, in some cases, the application is opaque with a UDF quality metric (i.e., number of complaints received from users). Is it possible to probe an application to understand which errors affect the application?
+\noindent \textbf{Black-box Applications: } SampleClean exploits the structure of the application to budget data cleaning. However, in some cases, the application is opaque with a UDF quality metric (i.e., number of complaints received from users). Is it possible to probe an application to understand which errors affect the application? \jn{Put this to the first point?}
 
 \vspace{0.5em}
 \noindent \textbf{Simulation and Knowledge Bases: } A number of recent projects are curating large knowledge bases. These knowledge bases may be useful for simulation realistic data errors such as entity resolution and missing value problems. Is it possible to learn a data cleaning policy from simulation of examples?
