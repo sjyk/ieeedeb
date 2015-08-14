@@ -58,15 +58,15 @@ If $R$ is dirty, then there is a true relation $R_{clean}$.
 \[
 Q(R_{clean}) \ne Q(R) \approx est = c \cdot Q(S)
 \]
-The error in $est$ has two components error due to sampling $\epsilon_s$ and error due to the difference with the cleaned relation $\epsilon_c = Q(R_{clean}) - Q(R)$:
+The error in $est$ has two components: error due to sampling $\epsilon_s$ and error due to the difference with the cleaned relation $\epsilon_c = Q(R_{clean}) - Q(R)$:
 \[
 \mid Q(R_{clean}) - est \mid \le \epsilon_s + \epsilon_c
 \]
 
-While they are both forms of query result error $\epsilon_s$ and $\epsilon_c$ are very different quantities.
+While they are both forms of query result error, $\epsilon_s$ and $\epsilon_c$ are very different quantities.
 $\epsilon_s$ is a random variable due to the sampling, and different samples would result in different realizations of $\epsilon_s$.
 As a random variable introduced by sampling, $\epsilon_s$ can be bounded by a variety of techniques as a function of the sample size.
-On the other hand, $\epsilon_c$ is deterministic, and by definition is a unknown quantity until all the data is cleaned.
+On the other hand, $\epsilon_c$ is deterministic, and by definition is an unknown quantity until all the data is cleaned.
 Thus, the bounds returned by a typical AQP framework on dirty data would neglect $\epsilon_c$.
 
 It is possible that $R_{clean} \ne R$ but $\epsilon_c=0$.
