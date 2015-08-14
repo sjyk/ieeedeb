@@ -1,4 +1,4 @@
-\section{\\sampleclean: Aggregate Query Processing on Dirty Data}
+\section{\sampleclean: Aggregate Query Processing on Dirty Data}
 This section introduces the \sampleclean framework where the results of aggregate queries on dirty relations are estimated and bounded. The subsequent variants of the problem will build on the formalization and results of this section.
 
 \subsection{Problem Setup}
@@ -24,9 +24,10 @@ where f is \avgfunc, \sumfunc, or \countfunc.
 
 \vspace{.25em}
 
-\begin{problem}[\sampleclean]
+\noindent\textbf{\sampleclean Problem}
 Given a dirty relation $R$, and a user-specified data cleaning function $C(\cdot)$, the \sampleclean problem is to estimate the result of an aggregate query $q$ applied to the hypothetical cleaned relation $q(R_{clean})$ with a budget of applying $C$ to at most $k$ rows of $R$. 
-\end{problem}
+
+\vspace{.25em}
 
 \subsection{Sample Estimates}\label{subsec:resultestimation}
 Consider a simpler problem; suppose we want to estimate the \mean value of $R$ ignoring data error from a sample $S$.
@@ -59,8 +60,6 @@ Running an aggregate query on the cleaned sample is not equivalent to computing 
 Consider the case where data is duplicated, sampling from the dirty data leads to an overrepresentation of the duplicated data in the sample.
 Even if cleaning is subsequently applied it does not change the fact that the sample is not uniform; and thus, the estimation method without errors presented before does not apply.
 Our goal is to define a new function $\saqpplusfunc(\cdot)$, an analog to $\saqpfunc(\cdot)$, that corrects attribute values and re-scales to ensures that the estimate remains unbiased.
-
-\jn{Do you think that we need to mention importance sampling somewhere?}
 
 \subsubsection{Attribute Errors}
 Attribute errors affect an invidual row and thus do not change the sampling statistics.
@@ -186,7 +185,7 @@ there is also a tradeoff between answering more selective queries and maintenanc
 Microsoft maintains a public database of academic publications\footnote{\scriptsize http://academic.research.microsoft.com (Accessed Nov. 3, 2013)}.
 The errors in this dataset are primarily duplicated publications and mis-attributed publications.
 We selected publications from three database researchers: Jeffrey Ullman, Michael Franklin, and Rakesh Agarwal.
-To clean a sample of publications, we first manually removed the mis-attributions in the sample. Then, we applied the technique used in~\cite{wang2012crowder} \jn{the citation is missing} to identify potential duplicates for all of publications in our sample, and manually examined the potential matches.  
+To clean a sample of publications, we first manually removed the mis-attributions in the sample. Then, we applied the technique used in~\cite{wang2012crowder} to identify potential duplicates for all of publications in our sample, and manually examined the potential matches.  
 For illustration purpose, we cleaned the entire dataset, and showed the cleaning results in Table~\ref{tbl:dataset:ms-academic}. 
 \begin{table}[!ht]\vspace{-1em}
 \centering\caption{Microsoft Academic Search Dataset.}\vspace{.5em} \label{tbl:dataset:ms-academic}

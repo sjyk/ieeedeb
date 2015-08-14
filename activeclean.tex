@@ -59,16 +59,16 @@ A convex data analytics problem is specified by a set of features $X$, correspon
 The result is a \textbf{model} $\theta$ that minimizes the sum of losses over all features and labels.
 \end{definition}
 
-\begin{problem}[ActiveClean Problem]\label{activeclean}\sloppy
+\vspace{0.5em}
+\noindent\textbf{ActiveClean Problem: }\label{activeclean}\sloppy
 Let $R$ be a dirty relation, $F(r) \mapsto (x,y)$ be a featurization that maps
 a record $r \in R$ to a feature vector $x$ and label $y$, $\phi$ be a convex regularized loss,
 and $C(r) \mapsto r_{clean}$ be a cleaning technique that maps a record to its cleaned value. 
 Given these inputs, the ActiveClean problem is to return a \textbf{reliable} estimate $\hat{\theta}$ of the clean model for any limit $k$ on the number of times the data cleaning $C(\cdot)$ can be applied.
 
-\vspace{0.5em}
+\vspace{0.25em}
 
-\textbf{Reliable} precisely means that the expected error in this estimate (i.e., L2 difference w.r.t a model trained on a fully cleaned dataset) is bounded above by a monotonically decreasing function in $k$ and a monotonically decreasing function of the error of the dirty model. In other words, more cleaning implies more accuracy, and less initial error implies faster convergence.
-\end{problem}
+\emph{Reliable} precisely means that the expected error in this estimate (i.e., L2 difference w.r.t a model trained on a fully cleaned dataset) is bounded above by a monotonically decreasing function in $k$ and a monotonically decreasing function of the error of the dirty model. In other words, more cleaning implies more accuracy, and less initial error implies faster convergence.
 
 \subsection{Model Updates}
 The main insight of this work is that, in Convex Data Analytics, sampling is natually part of the query processing.

@@ -81,7 +81,9 @@ view $S_{clean}$.
 
 \noindent\textbf{Stale Sample View Cleaning: }
 The first problem addressed by \svc is how to clean a sample of the stale materialized view.
-\begin{problem}[Stale View Cleaning]\sloppy
+
+\vspace{0.25em}
+\noindent\textbf{Stale View Cleaning Problem: }\sloppy
 We are given a stale view $S$, a sample of this stale view $S$ with ratio $m$, the maintenance strategy $\mathcal{M}$, the base relations $\mathcal{D}$, and
 the insertion and deletion relations $\partial \mathcal{D}$.
 We want to find a relational expression $\mathcal{C}$ such that:
@@ -89,7 +91,6 @@ We want to find a relational expression $\mathcal{C}$ such that:
 V' = \mathcal{C}(S,\mathcal{D},\partial \mathcal{D}),
 \]
 where $V'$ is a sample of the up-to-date view with ratio $m$. 
-\end{problem}
 
 \noindent\textbf{Query Result Estimation: }
 The second problem addressed in this paper is query result estimation.
