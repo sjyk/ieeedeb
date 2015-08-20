@@ -81,7 +81,7 @@ a query result on dirty data, requires that $\epsilon_c$ is 0 or bound $\epsilon
 There are two ways in which this can be done: direct estimates and corrections.
 
 \vspace{0.5em}
-\noindent\textbf{Direct Estimate (Figure \ref{fig:est}A): } This technique is a direct extension of SAQP to handle data cleaning. A set of $k$ rows is sampled uniformly at random from the dirty relation $R$ resulting in a sample $S$. Data cleaning is applied to the sample $S$ resulting in $S_{clean}$.
+\noindent\textbf{Direct Estimate: } This technique is a direct extension of SAQP to handle data cleaning. A set of $k$ rows is sampled uniformly at random from the dirty relation $R$ resulting in a sample $S$. Data cleaning is applied to the sample $S$ resulting in $S_{clean}$.
 Data cleaning and sampling may change the statistical and scaling properties of the query $Q$, so $Q$ may have to be re-written to a query $\widehat{Q}$. $\widehat{Q}$ is applied to the sample $S_{clean}$ and the result is returned. 
 There are a couple of important points to note about this techniques.
 First, as in SAQP, the direct estimate only processes a sample of data.
@@ -90,19 +90,13 @@ As we will show later in the article, the direct estimate returns a result whose
 From a theoretical perspective, for some types of data cleaning, this technique ensures that $\epsilon_c = 0$ within the sample.
 
 \vspace{0.5em}
-\noindent\textbf{Correction (Figure \ref{fig:est}B): } The direct estimate suffers a subtle drawback. Suppose, there are relatively few errors in the data. The errors introduced by sampling may dominate any error reductions due to data cleaning. Instead of the direct estimate which ensures $\epsilon_c = 0$, we can try to estimate $\epsilon_c$. A set of $k$ rows is sampled uniformly at random from the dirty relation $R$ resulting in a sample $S$. Data cleaning is applied to the sample $S$ resulting in $S_{clean}$. 
+\noindent\textbf{Correction: } The direct estimate suffers a subtle drawback. Suppose, there are relatively few errors in the data. The errors introduced by sampling may dominate any error reductions due to data cleaning. Instead of the direct estimate which ensures $\epsilon_c = 0$, we can try to estimate $\epsilon_c$. A set of $k$ rows is sampled uniformly at random from the dirty relation $R$ resulting in a sample $S$. Data cleaning is applied to the sample $S$ resulting in $S_{clean}$. 
 The difference in applying $\widehat{Q}$ to S and $\widehat{Q}$ to $S_{clean}$ gives an estimate of $\epsilon_c$. 
 The interpretation of this estimate is a correction to the query result on the full dirty data.
 In contrast to the direct estimate, this technique requires processing the entire dirty data (but only cleaning a sample).
 However, as we will later show, if errors are rare this technique gives significantly improved accuracy over the direct estimates.
 
-\begin{SCfigure}\centering
-\includegraphics[width=.3\columnwidth]{figs/est1b.png}
-\hspace{2em}
-\includegraphics[width=.3\columnwidth]{figs/est1c.png}
-\caption{Estimating query results with data cleaning on random samples. There are two ways to estimate a query result: (a) direct estimation applies the query to a sample (possibly with some scaling), and (b) correction corrects a query result on the entire dirty data.\label{fig:est}}
-\end{SCfigure}
-
+\iffalse
 \subsubsection{Key Idea II: Sampling to Improve Accuracy}
 A small sample of clean data can improve improve query accuracy accuracy.
 Figure \ref{fig:est2} plots error as a function of the cleaned sample size on a corrupted TPCH dataset for a direct estimate, correction, and AllDirty (query on the full dirty data).
@@ -116,6 +110,7 @@ Note that the direct estimate returns results of the same accuracy regardless of
 \includegraphics[width=.6\columnwidth]{figs/allerror-samplesize.pdf}
 \caption{Comparison of the convergence of the methods on two TPC-H datasets of 6M tuples with simulated errors 50\% error and 5\% error. On the dataset with larger errors, the direct estimate gives a narrower confidence interval, and on the other the correction is more accurate. \label{fig:est2}}
 \end{SCfigure}
+\fi
 
 
 

@@ -26,26 +26,3 @@ While complementary, one major difference between the three works \cite{DBLP:con
 Identifying whether a row is erroneous requires materialization and thus specifying the errors is equivalent to full incremental maintenance. 
 We use the formalism of a ``maintenance strategy", the relational expression that updates the view, to allow us to sample rows that are not yet materialized.
 However, while not directly applicable for staleness, we see \svc as complementary to these works in the dirty data setting. 
-
-
-\vspace{.5em}
-
-{\noindent \bf Result Estimation and Sampling:}
-Estimating aggregate statistics of populations from samples has been well studied in the field of surveying \cite{weisberg2009total,valliant2000finite, hansen1987some, barnett1991sample, sarndal2003model, kalton1983introduction}.
-These works explore different types of sampling, error characterizations, bias-variance trade-offs, and confidence intervals.
-The theoretical foundation of surveying is statistical bounding of functions of independent random variables (e.g., samples with replacement).
-This field includes distribution-free bounds such as Markov/Chebyshev/Hoeffding bounds, asymptotic bounds such as the Central Limit Theorem (CLT), and empirical testing such as Bootstrapping \cite{hinkley1988bootstrap}.
-For a detailed survey of different types of statistical bounds refer to \cite{hahn2011statistical}.
-Due to the CLT's strong guarantees (unbiased sample estimates and normalcy), as in our work, it is widely applied in the analysis of sampling schemes.
-The more general study of sample estimators that are unbiased and have asymptotically normal distributions (like the CLT) is called U-Statistics, refer to \cite{lee1990u} for a survey of this theory.
-The stochastic process literature also discusses problems in unbiased estimation from samples \cite{jacod1987limit}.
-
-\vspace{.5em}
-
-{\noindent \bf Distinct Value Estimation:}
-Distinct value estimation has been an open problem in stream processing and database research~\cite{considine2004approximate,bar2002counting,haas1995sampling,beyer2007synopses}.
-Similar to our analysis, some have argued that simply removing duplicates in a sample of data does not work~\cite{charikar2000towards}.
-In the storage literature, similar weighted average techniques have been applied for global file duplication rate estimation \cite{harnik2012estimation} based on the knowledge of duplication rates within a sample.
-This work can be seen as a simplified version of our problem only answering a count query with only duplication errors.
-Techniques similar to our duplicate reweighting scheme have been studied in estimating from non-uniform samples \cite{aldroubi2002non}, and is also similar to the acceptance ratio used sampling algorithms such as the Metropolis-Hastings Algorithm and Rejection Sampling \cite{liu1996metropolized,metropolis1953equation}.
-Further relevant work includes sensitivity analysis of set functions \cite{mcdiarmid1989method, jukna2012analysis} and statistical information theory \cite{kullback1997information}. 

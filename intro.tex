@@ -41,7 +41,7 @@ There is an interesting theoretical tradeoff between these approaches, where the
 
 By establishing the link between AQP and data cleaning, this idea has opened up a number of new research opportunities. 
 We applied the same principles to other domains with expensive data transformations such as Materialized View Maintenance and Machine Learning.
-In this article, we highlight four projects:
+In this article, we highlight three projects:
 
 \vspace{0.5em}
 \noindent \textbf{\sampleclean \cite{wang1999sample}: } \sampleclean estimates aggregate (\sumfunc, \countfunc, \avgfunc) queries using samples of clean data. \sampleclean reweights the data to compensate for changes in sampling statistics such that the estimates are unbiased and bounded in confidence intervals.
@@ -55,8 +55,5 @@ Aggregate queries are approximated from a stale MV using a small sample of up-to
 \noindent \textbf{ActiveClean: } ActiveClean extends \sampleclean to a class of analytics problems called Convex Data Analytics (subsuming the aggregates studied in \sampleclean and including Machine Learning such as Support Vector Machines and Linear Regression). ActiveClean exploits the convex structure of the problem (i.e. gradients and feature space) to prioritize cleaning data that is likely to affect the model. ActiveClean directly integrates cleaning into the model training loop and as a result gives a bounded approximation for any cleaning budget.
 
 \vspace{0.5em}
-\noindent \textbf{Wisteria \cite{haas2015wisteria}: } Wisteria is a system that implements the ideas described in the SampleClean work in a distributed analytics platform. This involved designing an algebra for data cleaning transformations and optimizations for their execution to reduce the latency of data cleaning operators.
 
-\vspace{0.5em}
-
-This article is organized as follows. Section 2 introduces the project and its main ideas. Section 3 overviews the basic architecture of each one of the projects. Section 4/5/6 describes \sampleclean, View Cleaning, and ActiveClean respectively. Section 7 reviews the related work in this field. In Section 8, we highlight some of the open problems and future directions of the SampleClean project. Finally, we conclude in Section 9.
+This article is organized as follows. Section 2 introduces the project and its main ideas. Section 4/5/6 describes \sampleclean, View Cleaning, and ActiveClean respectively. Section 7 reviews the related work in this field. In Section 8, we highlight some of the open problems and future directions of the SampleClean project. Finally, we conclude in Section 9.

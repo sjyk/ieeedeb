@@ -1,22 +1,5 @@
 \section{ActiveClean: Machine Learning on Dirty Data}
 Analytics is moving beyond SQL, and the growing popularity of predictive models \cite{bdas, alexandrov2014stratosphere, crotty2014tupleware, hellerstein2012madlib} leads to additional challenges in managing dirty data.
-Predictive models rely on learning relationships between features and labels, and systematic corruption \cite{taylor1982introduction} (i.e., corruption that disproportionately affects certain data) can mask or even introduce spurious new relationships.
-Furthermore, the high dimensionality of these models can amplify small problems \cite{xiaofeature} resulting in error-prone predictions even when trained on mostly clean data.
-Our key insight is that predictive models are essentially high dimensional aggregate queries but that dimensionality leads to new challenges.
-
-\subsection{Motivation}
-Consider a music recommender system in which due to a software bug, all users from Europe have an incorrect age attribute defaulted to ``18-24".
-A recommendation model trained on this data may spuriously learn a correlation relationship between age ``18-24" and music liked by European users.
-A bug, which ostensibly affected only the European users' rows, can affect predictions to all users aged ``18-24".
-Systematic corruption prior to featurization is not addressed in the robust Machine Learning literature which focuses on the resilience to outliers (e.g., age ``150").
-
-Unfortunately, a straight-forward application of the techniques proposed in the previous sections have problems.
-Consider the direct estimation technique for aggregate queries.
-Accurate model training may require a large amount of training data and $k$ examples may not be enough for a viable model.
-High-dimensional predictive models may actually be more sensitive to lack of training data than data error.
-On the other hand, the correction technique and the bounds were derived for a small class of aggregates.
-This does not generalize to an arbitrary statistical model. 
-The goal of this work is to derive a scheme analogous to the correction technique but theoretically justified for predictive analytics.
 
 \subsection{Simpson's Paradox}
 The challenge is that the high-dimensional models are very sensitive to systematic biases, and many of the techniques applied in practice suffer methodological problems.
@@ -47,12 +30,7 @@ Formally, for labeled training examples $\{(x_{i},y_{i})\}_{i=1}^{N}$, the probl
  \theta^{*}=\arg\min_{\theta}\sum_{i=1}^{N}\phi(x_{i},y_{i},\theta)
 \]
 Where $\phi$ is a convex function in $\theta$.
-Typically, a \emph{regularization} term $r(\theta)$ is added to this problem.
-$r(\theta)$ penalizes high or low values of feature weights in $\theta$ to avoid overfitting to noise in the training examples.
-\[
- \theta^{*}=\arg\min_{\theta}\sum_{i=1}^{N}\phi(x_{i},y_{i},\theta) + r(\theta)
-\]
-Without loss of generality, we will include the regularization as part of the loss function i.e., $\phi(x_{i},y_{i},\theta)$ includes $r(\theta)$.
+Without loss of generality, we will include regularization as part of the loss function i.e., $\phi(x_{i},y_{i},\theta)$ includes $r(\theta)$.
 
 \begin{definition}[Convex Data Analytics]
 A convex data analytics problem is specified by a set of features $X$, corresponding set of labels $Y$, and a parametrized loss function $\phi$ that is convex in its parameter $\theta$.

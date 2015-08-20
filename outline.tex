@@ -1,6 +1,6 @@
 %% LyX 2.0.6 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage{deauthor}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
@@ -104,6 +104,9 @@
 \def\rightouterjoin{\mathbin{\bowtie\mkern-5.8mu\ojoin}}
 \def\fullouterjoin{\mathbin{\ojoin\mkern-5.8mu\bowtie\mkern-5.8mu\ojoin}}
 
+\setlength{\belowdisplayskip}{1pt} \setlength{\belowdisplayshortskip}{1pt}
+\setlength{\abovedisplayskip}{1pt} \setlength{\abovedisplayshortskip}{1pt}
+
 \author{ Sanjay Krishnan, Jiannan Wang, Ken Goldberg, Michael J. Franklin \\
 AMPLab, UC Berkeley\\
 \{jnwang, sanjaykrishnan, franklin, goldberg\}@berkeley.edu
@@ -129,15 +132,14 @@ Query Process (AQP). We describe three projects: \sampleclean, Stale
 View Cleaning, and ActiveClean. \sampleclean~returns bounded estimates
 of SUM, COUNT, and AVG queries using a sample of cleaned data. Stale
 View Cleaning models staleness in Materialized Views as a type of
-data error and the same techniques for approximate incremental view maintenance. ActiveClean extends the framework to a class of analytics
+data error and applies \sampleclean to approximate incremental view maintenance. ActiveClean extends the framework to a class of analytics
 that we call convex data analysis (subsuming common aggregate queries
-and including Machine Learning). Finally, we describe a number of
-open problems and future directions for the project. 
+and including Machine Learning). 
 \end{abstract}
 
 \input{intro.tex}
 \input{background.tex}
-\input{architecture.tex}
+%\input{architecture.tex}
 \input{sampleclean.tex}
 \input{viewcleaning.tex}
 \input{activeclean.tex}
