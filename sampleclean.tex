@@ -186,25 +186,6 @@ The errors in this dataset are primarily duplicated publications and mis-attribu
 We selected publications from three database researchers: Jeffrey Ullman, Michael Franklin, and Rakesh Agarwal.
 To clean a sample of publications, we first manually removed the mis-attributions in the sample. Then, we applied the technique used in~\cite{wang2012crowder} to identify potential duplicates for all of publications in our sample, and manually examined the potential matches.  
 For illustration purpose, we cleaned the entire dataset, and showed the cleaning results in Table~\ref{tbl:dataset:ms-academic}. 
-\begin{table}[!ht]\vspace{-1em}
-\centering\caption{Microsoft Academic Search Dataset.}\vspace{.5em} \label{tbl:dataset:ms-academic}
-\begin{tabular}{r r r r r}
-\hline\hline
-Name & Dirty & Clean & Pred \% & Dup \\ 
-\hline  % inserts single horizontal line
-Rakesh Agarwal & 353 & 211 & 18.13\% & 1.28\\
-\hline
-Jeffery Ullman & 460 & 255 & 05.00\% & 1.65\\
-\hline
-Michael Franklin & 560 & 173 & 65.09\% & 1.13\\
-\hline
-%\hline %inserts single line
-\end{tabular}\vspace{-.75em}
-%\reminder{May be we need to save some space.}
-%\caption{The Microsoft Academic Search Dataset. We manually cleaned the datasets for each of the authors.
-%This table shows the difference between the reported number of publications (AllDirty) and the number of publications after our cleaning (AllClean).
-%We also include the false positive percentage and the duplication ratio (Section \ref{sec:\sampleclean}) to illustrate the type of errors.}\label{dataset:ms-academic}\vspace{-1em}
-\end{table}
 
 This table shows the difference between the reported number of publications (Dirty) and the number of publications after our cleaning (Clean).
 We also diagnosed the errors and recorded the duplication ratio (Dup) and the percentage of mis-attributed papers (Pred).
@@ -218,11 +199,26 @@ To achieve a correct ranking with 99\% probability, we require 326 samples to be
 In comparison, AllDirty always returns an incorrect ranking.
 \sampleclean provides a flexible way to achieve a desired confidence on decision based on dirty data queries.
 
-\begin{SCfigure}
+\begin{figure}
+\centering
+\begin{tabular}{r r r r r}
+\hline\hline
+Name & Dirty & Clean & Pred \% & Dup \\ 
+\hline  % inserts single horizontal line
+Rakesh Agarwal & 353 & 211 & 18.13\% & 1.28\\
+\hline
+Jeffery Ullman & 460 & 255 & 05.00\% & 1.65\\
+\hline
+Michael Franklin & 560 & 173 & 65.09\% & 1.13\\
+\hline
+%\hline %inserts single line
+\end{tabular}
+\qquad
 %\includegraphics[width=0.78\textwidth]{figs/msacademic-paper-count.eps}
-\includegraphics[width=0.25\textwidth]{figs/msacademic-paper-ranking.eps}
+\includegraphics[width=0.3\textwidth]{figs/msacademic-paper-ranking.eps}
+
 \caption{We can return the correct ranking with 95\% probability after cleaning only 210 total samples. To achieve a correct ranking with 99\% probability, we require 326 samples to be cleaned.\label{exp:ms-academic-ranking}}
 
-\end{SCfigure}
+\end{figure}
 
 
