@@ -1,10 +1,9 @@
-\section{ActiveClean: Machine Learning on Dirty Data}
+\section{ActiveClean: Machine Learning on Dirty Data \cite{krishnan2015acl}}
 Analytics is moving beyond SQL, and the growing popularity of predictive models \cite{bdas, alexandrov2014stratosphere, crotty2014tupleware, hellerstein2012madlib} leads to additional challenges in managing dirty data.
 
 \subsection{Simpson's Paradox}
 The challenge is that the high-dimensional models are very sensitive to systematic biases, and many of the techniques applied in practice suffer methodological problems.
-One technique to avoid dependence on sample size is ``write back" approach, where $k$ rows are cleaned and written back to the database.
-Let $k$ rows be cleaned, but all of the remaining dirty rows are retained in the dataset.
+Consider the following approach: let $k$ rows be cleaned, but all of the remaining dirty rows are retained in the dataset.
 Figure \ref{update-arch1} highlights the dangers of this approach on a very simple dirty dataset and a linear regression model i.e., the best fit line for two variables. 
 One of the variables is systematically corrupted with a translation in the x-axis (Figure \ref{update-arch1}a).
 The dirty data is marked in brown and the clean data in green, and their respective best fit lines are in blue.

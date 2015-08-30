@@ -67,7 +67,9 @@ described previously once we have a sample of up-to-date rows.
 We need to find an efficient maintnenance plan that avoids extra effort (i.e., materialization of rows outside the sample).
 The challenge is that $\mathcal{M}$ does not always commute with sampling.
 To address the commutativity problem, we need to ensure that for each $s \in V'$ all contributing rows in subexpressions to $s$ are also sampled. 
-This can be achieved with provenance, also termed lineage, which has been an important tool in the analysis of materialized views \cite{DBLP:journals/vldb/CuiW03} and in approximate query processing \cite{DBLP:conf/sigmod/ZengGMZ14}. We recursively define a set of primary keys for all relations in the expression tree to define tuple provenance.
+We address this with a two-step process: (1) build a relation expression tree that preserves primary key relationships, and (2) use a hashing operator to push down along these relationships.
+
+\noindent\textbf{Primary Key: }We recursively define a set of primary keys for all relations in the expression tree to define tuple provenance.
 The primary keys allow us to determine the set of rows that contribute to a row $r$ in a derived relation.
 The following rules define a constructive definition for these keys: 
 \begin{definition} [Primary Key Generation]\label{pk}
@@ -85,7 +87,7 @@ For every relational expression $R$, we define the primary key attribute(s) of e
 For every node at the expression tree, these keys are guaranteed to uniquely identify a row.
 \end{definition}
 
-Next, instead of sampling with pseudo-random number generation, we use a hashing procedure.
+\noindent\textbf{Hashing: } Next, instead of sampling with pseudo-random number generation, we use a hashing procedure.
 This procedure is a deterministic way of mapping a primary key to a Boolean, we can ensure that all contributing rows are also sampled. 
 Let us denote the hashing operator $\eta_{a, m}(R)$. 
 For all tuples in R, this operator applies a hash function whose range is $[0,1]$ to primary key $a$ (which may be a set) and selects those records with hash less than or equal to $m$.

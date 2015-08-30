@@ -1,18 +1,16 @@
 \section{\sampleclean: Aggregate Query Processing on Dirty Data}
-This section introduces the \sampleclean framework where the results of aggregate queries on dirty relations are estimated and bounded. The subsequent variants of the problem will build on the formalization and results of this section.
+This section introduces the \sampleclean framework where the results of aggregate queries on dirty relations are estimated and bounded.
 
 \subsection{Problem Setup}
 
-\noindent \textbf{Dirty Relation: } Let $R$ be a dirty relation, where it is corrupted with the following errors: (\emph{Attribute Errors}) a row $r\in R$ has an attribute error in an attribute $a$ if $r(a)$ is incorrect or has a missing value,  (\emph{Duplication Errors} ) a row $r \in R$ is said to be a duplicate if there exists another distinct $r' \in R$ such that they refer to the same entity.
-
-\vspace{.25em}
-
-\noindent For every dirty relation $R$, there is a cleaned version $R_{clean}$ where attribute errors are corrected (or filled) and duplicates are merged to a canonical version. 
+\noindent \textbf{Dirty Relation: } Let $R$ be a dirty relation corrupted with the following errors: (\emph{Attribute Errors}) a row $r\in R$ has an attribute error in an attribute $a$ if $r(a)$ is incorrect or has a missing value,  (\emph{Duplication Errors} ) a row $r \in R$ is said to be a duplicate if there exists another distinct $r' \in R$ such that they refer to the same entity.
+For every dirty relation $R$, there is a cleaned version $R_{clean}$ where attribute errors are corrected (or filled) and duplicates are merged to a canonical version. 
 
 \vspace{.25em}
 
 \noindent\textbf{Data Cleaning Model: } 
-For each row $r \in R$ the user-specified data cleaning technique must provide returns the following quantities: (\Correct{r}[a]) the corrected value of the attribute, (\Dedup{r}{R}) the number of times the record is duplicated in the entire dataset.
+For each row $r \in R$ the user-specified data cleaning technique $C(\cdot)$ must provide the following quantities: \Correct{r}[a] the corrected value of the attribute, \Dedup{r}{R} the number of times the record is duplicated in the entire dataset.
+
 
 \vspace{.25em}
 
@@ -31,7 +29,7 @@ Given a dirty relation $R$, and a user-specified data cleaning function $C(\cdot
 
 \subsection{Sample Estimates}\label{subsec:resultestimation}
 Consider a simpler problem; suppose we want to estimate the \mean value of a set of real numbers $R$ ignoring data error from a sample $S$.
-If $S$ is a sample uniformly at random from $R$ (with or without replacement), we can calculate the \mean of $S$ and for a large enough sample, the Central Limit Theorem (CLT) states that these estimates follow a normal distribution:
+If $S$ is sampleed uniformly at random from $R$ (with or without replacement), we can calculate the \mean of $S$ and for a large enough sample, the Central Limit Theorem (CLT) states that these estimates follow a normal distribution:
 \[\small
 N(\mean(R),\frac{var(R)}{k})
 \]
@@ -40,7 +38,7 @@ Since the estimate is normally distributed, we can define a confidence interval 
 \mean(S) \pm \lambda \sqrt{\frac{var(S)}{k}}.
 \end{equation}
 
-It turns out that we can reformulate \sumfunc,\countfunc, and \avgfunc on an attribute $a$ of a \emph{relation} R as calculating a \mean value so we can estimate their confidence intervals with the CLT 
+It turns out that we can reformulate \sumfunc, \countfunc, and \avgfunc on an attribute $a$ of a \emph{relation} R as calculating a \mean value so we can estimate their confidence intervals with the CLT 
 $
 f(S) = \frac{1}{k} \sum_{r \in S} \saqpfunc(r)
 $.
@@ -50,9 +48,10 @@ where $\saqpfunc(\cdot)$\footnote{\Predicate{t} is the predicate of the aggregat
 \item \sumfunc: ~\, $\saqpfunc(t) = \Predicate{r} \cdot N \cdot r(a)$\vspace{-.5em}
 \item \avgfunc: ~\, $\saqpfunc(t) = \Predicate{r} \cdot \frac{k}{k_{\pred}}  \cdot r(a) $ 
 \end{itemize}
+It turns out that these estimates are unbiased or conditionally unbiased; that is the expectation over all samples of the same size is the true answer.
 
 \subsection{Direct Estimation with Data Errors}
-However, when the data is dirty, we are actually interested in estimating an aggregate query on $R_{\clean}$.
+We are actually interested in estimating an aggregate query on $R_{\clean}$.
 However, since we do not have the clean data, we cannot directly sample from $R_{\clean}$.
 We must draw our sample from the dirty data $R$ and then clean the sample.
 Running an aggregate query on the cleaned sample is not equivalent to computing the query result on a sample directly drawn from the clean data.
@@ -71,11 +70,9 @@ Note that the $\saqpfunc(\cdot)$ for an \avgfunc query is dependent on the param
 If we correct values in the predicate attributes, we need to recompute $k_{\pred}$ in the cleaned sample.
 
 \subsubsection{Duplication Errors}
-Since duplication errors affect multiple tuples and the size of $R_{\clean}$ is different from the size of $R$, they do affect the uniformity of the sampling.
 The duplicated data is more likely to be sampled and thus be over-represented in the estimate of the \mean.
 We can address this with a weighted mean to reduce the effects of this over-representation.
 Furthermore, we can incorporate this weighting into $\saqpplusfunc(\cdot)$.
-
 Specifically, if a tuple $r$ is duplicated $m=\Dedup{r}{R}$ times, then it is $m$ times more likely to be sampled, and we should down weight it with a $\frac{1}{m}$ factor compared to the other tuples in the sample.
 We formalize this intuition with the following lemma (proved in \cite{wang1999sample}):
 \begin{lemma}\label{lem:derror}
@@ -185,7 +182,7 @@ Microsoft maintains a public database of academic publications\footnote{\scripts
 The errors in this dataset are primarily duplicated publications and mis-attributed publications.
 We selected publications from three database researchers: Jeffrey Ullman, Michael Franklin, and Rakesh Agarwal.
 To clean a sample of publications, we first manually removed the mis-attributions in the sample. Then, we applied the technique used in~\cite{wang2012crowder} to identify potential duplicates for all of publications in our sample, and manually examined the potential matches.  
-For illustration purpose, we cleaned the entire dataset, and showed the cleaning results in Table~\ref{tbl:dataset:ms-academic}. 
+For illustration purpose, we cleaned the entire dataset, and showed the cleaning results in Figure \ref{exp:ms-academic-ranking}. 
 
 This table shows the difference between the reported number of publications (Dirty) and the number of publications after our cleaning (Clean).
 We also diagnosed the errors and recorded the duplication ratio (Dup) and the percentage of mis-attributed papers (Pred).
@@ -201,6 +198,12 @@ In comparison, AllDirty always returns an incorrect ranking.
 
 \begin{figure}
 \centering
+
+\includegraphics[width=0.3\textwidth]{figs/msacademic-paper-ranking.eps}
+
+\begin{minipage}[b]{0.60\textwidth}
+\centering
+\scriptsize
 \begin{tabular}{r r r r r}
 \hline\hline
 Name & Dirty & Clean & Pred \% & Dup \\ 
@@ -213,9 +216,10 @@ Michael Franklin & 560 & 173 & 65.09\% & 1.13\\
 \hline
 %\hline %inserts single line
 \end{tabular}
-\qquad
+\par\vspace{0pt}
+\end{minipage}
+
 %\includegraphics[width=0.78\textwidth]{figs/msacademic-paper-count.eps}
-\includegraphics[width=0.3\textwidth]{figs/msacademic-paper-ranking.eps}
 
 \caption{We can return the correct ranking with 95\% probability after cleaning only 210 total samples. To achieve a correct ranking with 99\% probability, we require 326 samples to be cleaned.\label{exp:ms-academic-ranking}}
 

@@ -2,9 +2,6 @@
 We further describe a number of open theoretical and practical problems to challenge the community:
 
 \vspace{0.5em}
-\noindent \textbf{Black-box Applications: } SampleClean exploits the structure of the application to budget data cleaning. However, in some cases, the application is opaque with a UDF quality metric (i.e., number of complaints received from users). There is an open problem of whether is it possible to probe an application to understand which errors affect the application. We believe that recent results in reinforcement learning can be applied to address this issue.
-
-\vspace{0.5em}
 \noindent \textbf{Sample-based Optimization of Workflows: } In practical data cleaning workflows, there are numerous design choices e.g., whether or not to use crowdsourcing, similarity functions, etc. An open problem is using samples of cleaned data to estimate and tune parameters on data cleaning workflows.
 
 \vspace{0.5em}
@@ -16,8 +13,5 @@ variance of the clean data $\sigma_c^2$, variance of the pairwise differences be
 
 \vspace{0.5em}
 \noindent \textbf{Confirmation Bias and Sample Re-use: } Confirmation bias is defined as a ``tendency to search for or interpret information in a way that confirms one's preconceptions"\cite{plous1993psychology}. In systems like SampleClean, users repeatedly query and clean the sample of data. This process may encourage confirmation bias as users are allowed to modify data based on reviewing a query result (i.e., what prevents a user from removing data that does not match his or her hypothesis). An open problem is designing efficient APIs to mitigate the effects of \emph{confirmation bias}, perhaps by limiting the number of times a user can query the sample to review the effects of a cleaning operation.
-
-\vspace{0.5em}
-\noindent \textbf{Simulation and Knowledge Bases: } A number of recent projects are curating large knowledge bases. These knowledge bases may be useful for simulation realistic data errors such as entity resolution and missing value problems. Is it possible to learn a data cleaning policy from simulation of examples?
 
 
