@@ -60,6 +60,7 @@ ActiveClean is initialized with $\theta^{(1)} = \theta^{(d)}$ which is the dirty
 At each iteration $t=\{1,...,T\}$, the cleaning is applied to a batch of data $b$ selected from the set of candidate dirty rows $R$.
 Then, an average gradient is estimated from the cleaned batch and the model is updated.
 Iterations continue until $k = T \cdot b$ rows are cleaned.
+The user sets the learning rate $\lambda$ initially.
 
 \begin{enumerate}[noitemsep]
 	\item Calculate the gradient over the sample of clean data and call the result $g_S(\theta^{(t)})$
